@@ -1,0 +1,1004 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+<title>货车宝组织能力复盘进化考核</title>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+  body { font-family: -apple-system, "PingFang SC", "Microsoft YaHei", sans-serif; background: #f5f7fa; color: #333; line-height: 1.6; -webkit-text-size-adjust: 100%; }
+  .container { max-width: 900px; margin: 0 auto; padding: 20px; }
+
+  /* 顶部标题区 */
+  .header { background: linear-gradient(135deg, #1a73e8, #0d47a1); color: white; padding: 24px 32px; border-radius: 12px; margin-bottom: 20px; }
+  .header h1 { font-size: 22px; font-weight: 700; margin-bottom: 6px; }
+  .header p { font-size: 13px; opacity: 0.85; margin-bottom: 4px; }
+  .header-date { font-size: 14px; opacity: 0.9; }
+
+  /* 进度条（不显示百分比数字） */
+  .progress-bar { background: white; border-radius: 12px; padding: 16px 24px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .progress-label { font-size: 13px; color: #666; margin-bottom: 8px; }
+  .progress-track { height: 8px; background: #e8edf2; border-radius: 4px; overflow: hidden; }
+  .progress-fill { height: 100%; background: linear-gradient(90deg, #1a73e8, #4fc3f7); border-radius: 4px; transition: width 0.4s ease; width: 0%; }
+
+  /* 卡片 */
+  .card { background: white; border-radius: 12px; padding: 28px 32px; margin-bottom: 20px; box-shadow: 0 2px 8px rgba(0,0,0,0.06); }
+  .card-title { font-size: 17px; font-weight: 700; color: #1a73e8; margin-bottom: 4px; display: flex; align-items: center; gap: 8px; }
+  .card-subtitle { font-size: 12px; color: #999; margin-bottom: 20px; }
+  .section-num { display: inline-flex; align-items: center; justify-content: center; width: 28px; height: 28px; background: #1a73e8; color: white; border-radius: 50%; font-size: 14px; font-weight: 700; flex-shrink: 0; }
+
+  /* 表单元素 */
+  .form-group { margin-bottom: 18px; }
+  .form-label { font-size: 14px; font-weight: 600; color: #333; margin-bottom: 6px; display: block; }
+  .form-label .required { color: #e53935; margin-left: 2px; }
+  .form-hint { font-size: 12px; color: #999; margin-bottom: 6px; }
+  input[type="text"], textarea {
+    width: 100%; padding: 10px 14px; border: 1.5px solid #dde1e6; border-radius: 8px;
+    font-size: 14px; color: #333; background: #fafbfc; transition: border 0.2s;
+    font-family: inherit;
+  }
+  input:focus, textarea:focus { outline: none; border-color: #1a73e8; background: white; }
+  textarea { resize: vertical; min-height: 60px; }
+  .char-count { font-size: 12px; color: #999; text-align: right; margin-top: 4px; }
+  .char-count.warn { color: #e53935; }
+
+  /* 单选 / 多选 */
+  .radio-group, .checkbox-group { display: flex; flex-wrap: wrap; gap: 10px; }
+  .radio-item, .checkbox-item {
+    display: flex; align-items: center; gap: 6px; padding: 10px 16px;
+    border: 1.5px solid #dde1e6; border-radius: 8px; cursor: pointer;
+    font-size: 13px; color: #555; transition: all 0.2s; user-select: none;
+    min-height: 44px;
+  }
+  .radio-item:hover, .checkbox-item:hover { border-color: #1a73e8; background: #f0f6ff; }
+  .radio-item.selected, .checkbox-item.selected { border-color: #1a73e8; background: #e8f0fe; color: #1a73e8; font-weight: 600; }
+  .radio-item input, .checkbox-item input { display: none; }
+
+  /* 任务卡片 */
+  .task-card { border: 1.5px solid #e8edf2; border-radius: 10px; padding: 20px; margin-bottom: 16px; position: relative; }
+  .task-header { font-size: 15px; font-weight: 700; color: #333; margin-bottom: 16px; display: flex; align-items: center; justify-content: space-between; }
+  .task-toggle { font-size: 13px; color: #1a73e8; cursor: pointer; user-select: none; }
+  .task-toggle:hover { text-decoration: underline; }
+
+  /* 动态表格 */
+  .dyn-table { width: 100%; border-collapse: collapse; margin-top: 10px; }
+  .dyn-table th { background: #f5f7fa; padding: 8px 12px; font-size: 13px; color: #666; text-align: left; border-bottom: 1.5px solid #e8edf2; }
+  .dyn-table td { padding: 6px 8px; border-bottom: 1px solid #f0f0f0; }
+  .dyn-table input { border: 1px solid #dde1e6; border-radius: 6px; padding: 6px 10px; font-size: 13px; width: 100%; }
+  .btn-remove-row { background: none; border: none; color: #e53935; cursor: pointer; font-size: 18px; padding: 0 6px; }
+  .btn-add-row { background: none; border: 1.5px dashed #1a73e8; color: #1a73e8; border-radius: 6px; padding: 6px 16px; cursor: pointer; font-size: 13px; margin-top: 8px; }
+  .btn-add-row:hover { background: #f0f6ff; }
+
+  /* 按钮 */
+  .btn-primary {
+    background: linear-gradient(135deg, #1a73e8, #0d47a1); color: white;
+    border: none; border-radius: 10px; padding: 14px 48px; font-size: 16px;
+    font-weight: 700; cursor: pointer; display: block; margin: 30px auto 10px;
+    box-shadow: 0 4px 12px rgba(26,115,232,0.3); transition: all 0.2s;
+  }
+  .btn-primary:hover { transform: translateY(-1px); box-shadow: 0 6px 16px rgba(26,115,232,0.4); }
+  .btn-primary:active { transform: translateY(0); }
+
+  /* 提示信息 */
+  .info-box { background: #f0f6ff; border-left: 4px solid #1a73e8; padding: 12px 16px; border-radius: 0 8px 8px 0; margin-bottom: 20px; font-size: 13px; color: #333; line-height: 1.8; }
+  .success-box { background: #e8f5e9; border-left: 4px solid #43a047; padding: 16px 20px; border-radius: 0 10px 10px 0; margin: 20px 0; font-size: 14px; color: #2e7d32; }
+  .error-box { background: #fce4ec; border-left: 4px solid #e53935; padding: 12px 16px; border-radius: 0 8px 8px 0; margin: 16px 0; font-size: 13px; color: #c62828; }
+
+  /* 响应式 */
+  @media (max-width: 600px) {
+    .container { padding: 12px; }
+    .card { padding: 20px 18px; }
+    .header { padding: 18px 20px; }
+    .header h1 { font-size: 18px; }
+    .radio-group, .checkbox-group { gap: 6px; }
+    .radio-item, .checkbox-item { padding: 6px 10px; font-size: 12px; }
+  }
+
+  /* 草稿提示 */
+  .draft-toast {
+    position: fixed; bottom: 24px; right: 24px; background: #333; color: white;
+    padding: 10px 20px; border-radius: 8px; font-size: 13px; z-index: 999;
+    opacity: 0; transition: opacity 0.3s; pointer-events: none;
+  }
+  .draft-toast.show { opacity: 1; }
+
+  /* 提交成功覆盖层 */
+  .overlay {
+    display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+    background: rgba(0,0,0,0.5); z-index: 1000; align-items: center; justify-content: center;
+  }
+  .overlay.show { display: flex; }
+  .overlay-box { background: white; border-radius: 16px; padding: 40px; text-align: center; max-width: 420px; width: 90%; }
+  .overlay-box .icon { font-size: 48px; margin-bottom: 16px; }
+  .overlay-box h2 { font-size: 20px; color: #333; margin-bottom: 10px; }
+  .overlay-box p { font-size: 14px; color: #666; margin-bottom: 24px; line-height: 1.8; }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <!-- 标题区 -->
+  <div class="header">
+    <h1>货车宝组织能力复盘进化考核</h1>
+    <p>创业公司组织协同与能力成长版 · 真实、聚焦、可复盘、可优化</p>
+    <div class="header-date" id="reviewDate"></div>
+  </div>
+
+  <!-- 进度条（不显示百分比数字） -->
+  <div class="progress-bar">
+    <div class="progress-label">填写进度</div>
+    <div class="progress-track"><div class="progress-fill" id="progressFill"></div></div>
+  </div>
+
+  <form id="reviewForm" autocomplete="off">
+  <input type="hidden" id="f_month">
+
+    <!-- 一、基础信息 -->
+    <div class="card">
+      <div class="card-title"><span class="section-num">一</span> 基础信息</div>
+      <div class="card-subtitle">填写你的基本信息，所有带 <span style="color:#e53935">*</span> 的为必填项</div>
+
+      <div class="form-group">
+        <label class="form-label">姓名 <span class="required">*</span></label>
+        <input type="text" id="f_name" placeholder="请输入你的姓名" maxlength="20">
+      </div>
+    </div>
+
+    <!-- 二、核心工作成果复盘 -->
+    <div class="card">
+      <div class="card-title"><span class="section-num">二</span> 核心工作成果复盘</div>
+      <div class="card-subtitle">仅填写本月最重要的 1-3 项核心工作，不需要堆砌琐碎事务</div>
+
+      <!-- 任务1（必填） -->
+      <div class="task-card" id="task1">
+        <div class="task-header">核心任务 1 <span style="font-size:13px;color:#e53935;font-weight:400">* 必填</span></div>
+
+        <div class="form-group">
+          <label class="form-label">任务名称 <span class="required">*</span></label>
+          <input type="text" id="t1_name" placeholder="如：XX产品V2.0上线" maxlength="50">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">任务类型 <span class="required">*</span></label>
+          <div class="checkbox-group" id="t1_type">
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">收入增长<input type="checkbox" value="收入增长"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">客户成交<input type="checkbox" value="客户成交"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">品牌传播<input type="checkbox" value="品牌传播"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">用户增长<input type="checkbox" value="用户增长"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">内容运营<input type="checkbox" value="内容运营"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">产品推进<input type="checkbox" value="产品推进"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">AI提效<input type="checkbox" value="AI提效"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">团队协同<input type="checkbox" value="团队协同"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">客户服务<input type="checkbox" value="客户服务"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">资源合作<input type="checkbox" value="资源合作"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">数据分析<input type="checkbox" value="数据分析"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">其他<input type="checkbox" value="其他"><input type="text" id="t1_type_other" placeholder="请说明" style="width:80px;padding:2px 6px;font-size:12px;border:1px solid #dde1e6;border-radius:4px;margin-left:4px;" oninput="onOtherInput(this)"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">任务重要程度 <span class="required">*</span></label>
+          <div class="radio-group" id="t1_importance">
+            <label class="radio-item" onclick="toggleRadio(this)">核心业务任务<input type="radio" name="t1_imp" value="核心业务任务"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">重点支持任务<input type="radio" name="t1_imp" value="重点支持任务"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">日常保障任务<input type="radio" name="t1_imp" value="日常保障任务"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">我的参与角色 <span class="required">*</span></label>
+          <div class="radio-group" id="t1_role">
+            <label class="radio-item" onclick="toggleRadio(this)">主导推进<input type="radio" name="t1_role" value="主导推进"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">独立执行<input type="radio" name="t1_role" value="独立执行"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">协助支持<input type="radio" name="t1_role" value="协助支持"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">配合执行<input type="radio" name="t1_role" value="配合执行"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">工作复杂度 <span class="required">*</span></label>
+          <div class="radio-group" id="t1_complexity">
+            <label class="radio-item" onclick="toggleRadio(this)">标准执行型<input type="radio" name="t1_cx" value="标准执行型"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">需要经验判断<input type="radio" name="t1_cx" value="需要经验判断"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">需要跨团队协调<input type="radio" name="t1_cx" value="需要跨团队协调"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">需要独立推进复杂问题<input type="radio" name="t1_cx" value="需要独立推进复杂问题"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">核心目标 <span class="required">*</span></label>
+          <div class="form-hint">本任务最核心的目标是什么？（100字内）</div>
+          <textarea id="t1_goal" maxlength="100" oninput="updateCharCount(this, 100)"></textarea>
+          <div class="char-count" id="t1_goal_count">0 / 100</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">实际结果 <span class="required">*</span></label>
+          <div class="form-hint">实际完成了什么？哪些达成了？哪些未达成？原因是什么？（150字内）</div>
+          <textarea id="t1_result" maxlength="150" oninput="updateCharCount(this, 150)"></textarea>
+          <div class="char-count" id="t1_result_count">0 / 150</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">你在其中最核心的价值是什么？ <span class="required">*</span></label>
+          <div class="form-hint">例如：推动协调、解决问题、方案制定、资源整合、执行落地等</div>
+          <textarea id="t1_value" maxlength="100"></textarea>
+          <div class="char-count" id="t1_value_count">0 / 100</div>
+        </div>
+      </div>
+
+      <!-- 任务2（可选） -->
+      <div class="task-card" id="task2" style="display:none;">
+        <div class="task-header">核心任务 2 <span style="font-size:13px;color:#999;font-weight:400">选填</span></div>
+
+        <div class="form-group">
+          <label class="form-label">任务名称</label>
+          <input type="text" id="t2_name" placeholder="如：XX产品V2.0上线" maxlength="50">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">任务类型</label>
+          <div class="checkbox-group" id="t2_type">
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">收入增长<input type="checkbox" value="收入增长"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">客户成交<input type="checkbox" value="客户成交"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">品牌传播<input type="checkbox" value="品牌传播"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">用户增长<input type="checkbox" value="用户增长"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">内容运营<input type="checkbox" value="内容运营"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">产品推进<input type="checkbox" value="产品推进"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">AI提效<input type="checkbox" value="AI提效"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">团队协同<input type="checkbox" value="团队协同"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">客户服务<input type="checkbox" value="客户服务"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">资源合作<input type="checkbox" value="资源合作"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">数据分析<input type="checkbox" value="数据分析"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">其他<input type="checkbox" value="其他"><input type="text" id="t2_type_other" placeholder="请说明" style="width:80px;padding:2px 6px;font-size:12px;border:1px solid #dde1e6;border-radius:4px;margin-left:4px;" oninput="onOtherInput(this)"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">任务重要程度</label>
+          <div class="radio-group" id="t2_importance">
+            <label class="radio-item" onclick="toggleRadio(this)">核心业务任务<input type="radio" name="t2_imp" value="核心业务任务"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">重点支持任务<input type="radio" name="t2_imp" value="重点支持任务"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">日常保障任务<input type="radio" name="t2_imp" value="日常保障任务"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">我的参与角色</label>
+          <div class="radio-group" id="t2_role">
+            <label class="radio-item" onclick="toggleRadio(this)">主导推进<input type="radio" name="t2_role" value="主导推进"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">独立执行<input type="radio" name="t2_role" value="独立执行"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">协助支持<input type="radio" name="t2_role" value="协助支持"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">配合执行<input type="radio" name="t2_role" value="配合执行"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">工作复杂度</label>
+          <div class="radio-group" id="t2_complexity">
+            <label class="radio-item" onclick="toggleRadio(this)">标准执行型<input type="radio" name="t2_cx" value="标准执行型"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">需要经验判断<input type="radio" name="t2_cx" value="需要经验判断"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">需要跨团队协调<input type="radio" name="t2_cx" value="需要跨团队协调"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">需要独立推进复杂问题<input type="radio" name="t2_cx" value="需要独立推进复杂问题"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">核心目标</label>
+          <textarea id="t2_goal" maxlength="100" oninput="updateCharCount(this, 100)"></textarea>
+          <div class="char-count" id="t2_goal_count">0 / 100</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">实际结果</label>
+          <textarea id="t2_result" maxlength="150" oninput="updateCharCount(this, 150)"></textarea>
+          <div class="char-count" id="t2_result_count">0 / 150</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">你在其中最核心的价值是什么？</label>
+          <textarea id="t2_value" maxlength="100"></textarea>
+          <div class="char-count" id="t2_value_count">0 / 100</div>
+        </div>
+      </div>
+
+      <!-- 任务3（可选） -->
+      <div class="task-card" id="task3" style="display:none;">
+        <div class="task-header">核心任务 3 <span style="font-size:13px;color:#999;font-weight:400">选填</span></div>
+
+        <div class="form-group">
+          <label class="form-label">任务名称</label>
+          <input type="text" id="t3_name" placeholder="如：XX产品V2.0上线" maxlength="50">
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">任务类型</label>
+          <div class="checkbox-group" id="t3_type">
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">收入增长<input type="checkbox" value="收入增长"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">客户成交<input type="checkbox" value="客户成交"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">品牌传播<input type="checkbox" value="品牌传播"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">用户增长<input type="checkbox" value="用户增长"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">内容运营<input type="checkbox" value="内容运营"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">产品推进<input type="checkbox" value="产品推进"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">AI提效<input type="checkbox" value="AI提效"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">团队协同<input type="checkbox" value="团队协同"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">客户服务<input type="checkbox" value="客户服务"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">资源合作<input type="checkbox" value="资源合作"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">数据分析<input type="checkbox" value="数据分析"></label>
+            <label class="checkbox-item" onclick="toggleCheck(this, event)">其他<input type="checkbox" value="其他"><input type="text" id="t3_type_other" placeholder="请说明" style="width:80px;padding:2px 6px;font-size:12px;border:1px solid #dde1e6;border-radius:4px;margin-left:4px;" oninput="onOtherInput(this)"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">任务重要程度</label>
+          <div class="radio-group" id="t3_importance">
+            <label class="radio-item" onclick="toggleRadio(this)">核心业务任务<input type="radio" name="t3_imp" value="核心业务任务"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">重点支持任务<input type="radio" name="t3_imp" value="重点支持任务"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">日常保障任务<input type="radio" name="t3_imp" value="日常保障任务"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">我的参与角色</label>
+          <div class="radio-group" id="t3_role">
+            <label class="radio-item" onclick="toggleRadio(this)">主导推进<input type="radio" name="t3_role" value="主导推进"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">独立执行<input type="radio" name="t3_role" value="独立执行"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">协助支持<input type="radio" name="t3_role" value="协助支持"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">配合执行<input type="radio" name="t3_role" value="配合执行"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">工作复杂度</label>
+          <div class="radio-group" id="t3_complexity">
+            <label class="radio-item" onclick="toggleRadio(this)">标准执行型<input type="radio" name="t3_cx" value="标准执行型"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">需要经验判断<input type="radio" name="t3_cx" value="需要经验判断"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">需要跨团队协调<input type="radio" name="t3_cx" value="需要跨团队协调"></label>
+            <label class="radio-item" onclick="toggleRadio(this)">需要独立推进复杂问题<input type="radio" name="t3_cx" value="需要独立推进复杂问题"></label>
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">核心目标</label>
+          <textarea id="t3_goal" maxlength="100" oninput="updateCharCount(this, 100)"></textarea>
+          <div class="char-count" id="t3_goal_count">0 / 100</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">实际结果</label>
+          <textarea id="t3_result" maxlength="150" oninput="updateCharCount(this, 150)"></textarea>
+          <div class="char-count" id="t3_result_count">0 / 150</div>
+        </div>
+
+        <div class="form-group">
+          <label class="form-label">你在其中最核心的价值是什么？</label>
+          <textarea id="t3_value" maxlength="100"></textarea>
+          <div class="char-count" id="t3_value_count">0 / 100</div>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <span class="task-toggle" onclick="showTask(2)" id="toggleTask2">+ 添加核心任务 2</span>
+        <span class="task-toggle" onclick="showTask(3)" id="toggleTask3" style="display:none;">+ 添加核心任务 3</span>
+      </div>
+    </div>
+
+    <!-- 三、问题解决与协作复盘 -->
+    <div class="card">
+      <div class="card-title"><span class="section-num">三</span> 问题解决与协作复盘</div>
+
+      <div class="form-group">
+        <label class="form-label">本月你主动推动解决过什么问题？ <span class="required">*</span></label>
+        <div class="form-hint">包含：问题是什么、你怎么推动、协调了哪些人/资源、最终结果</div>
+        <textarea id="s_problem" maxlength="300"></textarea>
+        <div class="char-count" id="s_problem_count">0 / 300</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">本月最大的执行阻碍是什么？（可多选）<span class="required">*</span></label>
+        <div class="checkbox-group" id="s_blocks">
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">信息同步慢<input type="checkbox" value="信息同步慢"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">需求频繁变化<input type="checkbox" value="需求频繁变化"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">缺少明确负责人<input type="checkbox" value="缺少明确负责人"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">跨团队协作效率低<input type="checkbox" value="跨团队协作效率低"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">时间不足<input type="checkbox" value="时间不足"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">资源不足<input type="checkbox" value="资源不足"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">AI能力不足<input type="checkbox" value="AI能力不足"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">流程不清晰<input type="checkbox" value="流程不清晰"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">决策等待<input type="checkbox" value="决策等待"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">其他<input type="checkbox" value="其他"><input type="text" id="s_blocks_other" placeholder="请说明" style="width:80px;padding:2px 6px;font-size:12px;border:1px solid #dde1e6;border-radius:4px;margin-left:4px;" oninput="onOtherInput(this)"></label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">遇到问题时，你通常如何处理？ <span class="required">*</span></label>
+        <div class="radio-group" id="s_handle">
+          <label class="radio-item" onclick="toggleRadio(this)">等待安排<input type="radio" name="s_handle" value="等待安排"></label>
+          <label class="radio-item" onclick="toggleRadio(this)">自己解决<input type="radio" name="s_handle" value="自己解决"></label>
+          <label class="radio-item" onclick="toggleRadio(this)">主动协调<input type="radio" name="s_handle" value="主动协调"></label>
+          <label class="radio-item" onclick="toggleRadio(this)">推动多人协作<input type="radio" name="s_handle" value="推动多人协作"></label>
+          <label class="radio-item" onclick="toggleRadio(this)">升级反馈推动解决<input type="radio" name="s_handle" value="升级反馈推动解决"></label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">本月协作效率最高的人是谁？为什么？ <span class="required">*</span></label>
+        <textarea id="s_best" maxlength="200"></textarea>
+        <div class="char-count" id="s_best_count">0 / 200</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">你认为目前团队最需要优化的一个问题是什么？ <span class="required">*</span></label>
+        <div class="form-hint">不针对个人，聚焦流程、机制、协作或效率问题</div>
+        <textarea id="s_optimize" maxlength="200"></textarea>
+        <div class="char-count" id="s_optimize_count">0 / 200</div>
+      </div>
+    </div>
+
+    <!-- 四、AI能力复盘 -->
+    <div class="card">
+      <div class="card-title"><span class="section-num">四</span> AI能力复盘</div>
+
+      <div class="form-group">
+        <label class="form-label">目前你的AI使用情况 <span class="required">*</span></label>
+        <div class="radio-group" id="a_usage">
+          <label class="radio-item" onclick="toggleRadio(this)">完全未使用AI<input type="radio" name="a_usage" value="完全未使用AI"></label>
+          <label class="radio-item" onclick="toggleRadio(this)">偶尔辅助使用<input type="radio" name="a_usage" value="偶尔辅助使用"></label>
+          <label class="radio-item" onclick="toggleRadio(this)">已固定在部分工作场景使用<input type="radio" name="a_usage" value="已固定在部分工作场景使用"></label>
+          <label class="radio-item" onclick="toggleRadio(this)">已建立个人AI工作习惯<input type="radio" name="a_usage" value="已建立个人AI工作习惯"></label>
+          <label class="radio-item" onclick="toggleRadio(this)">AI已明显提升工作效率<input type="radio" name="a_usage" value="AI已明显提升工作效率"></label>
+          <label class="radio-item" onclick="toggleRadio(this)">AI已帮助优化团队协作/业务流程<input type="radio" name="a_usage" value="AI已帮助优化团队协作/业务流程"></label>
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">本月使用过的AI工具及场景</label>
+        <table class="dyn-table" id="aiTable">
+          <thead><tr><th>AI工具</th><th>使用场景</th><th>实际帮助</th><th style="width:40px;"></th></tr></thead>
+          <tbody id="aiTableBody">
+            <tr>
+              <td><input type="text" placeholder="如：ChatGPT"></td>
+              <td><input type="text" placeholder="如：写周报"></td>
+              <td><input type="text" placeholder="如：节省1小时"></td>
+              <td><button type="button" class="btn-remove-row" onclick="removeRow(this)">×</button></td>
+            </tr>
+          </tbody>
+        </table>
+        <button type="button" class="btn-add-row" onclick="addAiRow()">+ 添加一行</button>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">AI对你最大的帮助是什么？ <span class="required">*</span></label>
+        <div class="form-hint">例如：节省时间、提升效率、优化内容质量、辅助分析、减少重复工作、提升沟通效率等</div>
+        <textarea id="a_help" maxlength="200"></textarea>
+        <div class="char-count" id="a_help_count">0 / 200</div>
+      </div>
+    </div>
+
+    <!-- 五、团队能力与成长 -->
+    <div class="card">
+      <div class="card-title"><span class="section-num">五</span> 团队能力与成长</div>
+
+      <div class="form-group">
+        <label class="form-label">你认为自己目前最强的一项能力是什么？ <span class="required">*</span></label>
+        <textarea id="g_strong" maxlength="100"></textarea>
+        <div class="char-count" id="g_strong_count">0 / 100</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">你认为自己目前最需要提升的一项能力是什么？ <span class="required">*</span></label>
+        <textarea id="g_improve" maxlength="100"></textarea>
+        <div class="char-count" id="g_improve_count">0 / 100</div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">你认为团队目前最缺什么能力？（可多选）<span class="required">*</span></label>
+        <div class="checkbox-group" id="g_lack">
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">AI能力<input type="checkbox" value="AI能力"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">执行力<input type="checkbox" value="执行力"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">管理能力<input type="checkbox" value="管理能力"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">数据分析<input type="checkbox" value="数据分析"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">客户沟通<input type="checkbox" value="客户沟通"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">内容能力<input type="checkbox" value="内容能力"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">销售能力<input type="checkbox" value="销售能力"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">流程机制<input type="checkbox" value="流程机制"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">产品能力<input type="checkbox" value="产品能力"></label>
+          <label class="checkbox-item" onclick="toggleCheck(this, event)">其他<input type="checkbox" value="其他"><input type="text" id="g_lack_other" placeholder="请说明" style="width:80px;padding:2px 6px;font-size:12px;border:1px solid #dde1e6;border-radius:4px;margin-left:4px;" oninput="onOtherInput(this)"></label>
+        </div>
+      </div>
+    </div>
+
+    <!-- 六、自我总结（改为必填） -->
+    <div class="card">
+      <div class="card-title"><span class="section-num">六</span> 自我总结</div>
+      <div class="form-group">
+        <label class="form-label">总结你本月最有价值的一件事 <span class="required">*</span></label>
+        <textarea id="summary" maxlength="200" placeholder="总结你本月最有价值的一件事"></textarea>
+        <div class="char-count" id="summary_count">0 / 200</div>
+      </div>
+    </div>
+
+    <!-- 提交按钮 -->
+    <button type="button" class="btn-primary" onclick="submitForm()">提交复盘表</button>
+  </form>
+</div>
+
+<!-- 提交成功弹窗 -->
+<div class="overlay" id="successOverlay">
+  <div class="overlay-box">
+    <div class="icon">✅</div>
+    <h2>提交成功！</h2>
+    <p id="successMsg"></p>
+    <a id="downloadLink" style="display:none;margin:16px auto;padding:10px 32px;background:#1a73e8;color:white;border-radius:8px;font-size:14px;font-weight:700;text-decoration:none;display:inline-block;">点击下载CSV文件</a>
+    <br>
+    <button class="btn-primary" style="padding:10px 32px;font-size:14px;margin-top:12px;" onclick="closeOverlay()">确定</button>
+  </div>
+</div>
+
+<!-- 草稿保存提示 -->
+<div class="draft-toast" id="draftToast">草稿已自动保存</div>
+
+<script>
+// ========== safeLS 安全包装 ==========
+const safeLS = {
+  getItem: function(key) {
+    try { return safeLS.getItem(key); } catch(e) { return null; }
+  },
+  setItem: function(key, val) {
+    try { safeLS.setItem(key, val); } catch(e) {}
+  },
+  removeItem: function(key) {
+    try { safeLS.removeItem(key); } catch(e) {}
+  }
+};
+
+// ========== 工具函数 ==========
+function toggleCheck(el, evt) {
+  // 如果点击的是文本输入框，不切换 checkbox（让用户可以正常输入）
+  if (evt && evt.target.tagName === 'INPUT' && evt.target.type === 'text') return;
+  const cb = el.querySelector('input[type="checkbox"]');
+  if (cb) {
+    cb.checked = !cb.checked;
+    el.classList.toggle('selected', cb.checked);
+  }
+}
+
+function toggleRadio(el) {
+  const group = el.parentElement;
+  group.querySelectorAll('.radio-item').forEach(item => item.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function updateCharCount(el, max) {
+  const id = el.id + '_count';
+  const counter = document.getElementById(id);
+  if (counter) {
+    counter.textContent = el.value.length + ' / ' + max;
+    counter.className = 'char-count' + (el.value.length > max * 0.9 ? ' warn' : '');
+  }
+}
+
+function onOtherInput(input) {
+  // 输入内容时自动勾选"其他"checkbox；清空时自动取消
+  const label = input.parentElement;
+  if (label && label.classList.contains('checkbox-item')) {
+    const cb = label.querySelector('input[type="checkbox"]');
+    if (cb) {
+      cb.checked = input.value.trim() !== '';
+      label.classList.toggle('selected', cb.checked);
+    }
+  }
+}
+
+function showTask(n) {
+  if (n === 2) {
+    document.getElementById('task2').style.display = 'block';
+    document.getElementById('toggleTask2').style.display = 'none';
+    document.getElementById('toggleTask3').style.display = 'inline';
+  } else if (n === 3) {
+    document.getElementById('task3').style.display = 'block';
+    document.getElementById('toggleTask3').style.display = 'none';
+  }
+}
+
+function addAiRow() {
+  const tbody = document.getElementById('aiTableBody');
+  const tr = document.createElement('tr');
+  tr.innerHTML = '<td><input type="text" placeholder="如：ChatGPT"></td><td><input type="text" placeholder="如：写周报"></td><td><input type="text" placeholder="如：节省1小时"></td><td><button type="button" class="btn-remove-row" onclick="removeRow(this)">×</button></td>';
+  tbody.appendChild(tr);
+}
+
+function removeRow(btn) {
+  btn.closest('tr').remove();
+}
+
+// ========== 进度条（不显示百分比数字）==========
+function updateProgress() {
+  let total = 0, filled = 0;
+
+  // 基础信息：2项（姓名、复盘时间）
+  total += 2;
+  if (document.getElementById('f_name').value.trim()) filled++;
+  if (document.getElementById('f_month').value.trim()) filled++;
+
+  // 任务1：8项
+  total += 8;
+  if (document.getElementById('t1_name').value.trim()) filled++;
+  if (getCheckedValues('t1_type').length > 0) filled++;
+  if (getRadioValue('t1_importance')) filled++;
+  if (getRadioValue('t1_role')) filled++;
+  if (getRadioValue('t1_complexity')) filled++;
+  if (document.getElementById('t1_goal').value.trim()) filled++;
+  if (document.getElementById('t1_result').value.trim()) filled++;
+  if (document.getElementById('t1_value').value.trim()) filled++;
+
+  // 任务2（如显示）
+  if (document.getElementById('task2').style.display !== 'none') {
+    total += 8;
+    if (document.getElementById('t2_name').value.trim()) filled++;
+    if (getCheckedValues('t2_type').length > 0) filled++;
+    if (getRadioValue('t2_importance')) filled++;
+    if (getRadioValue('t2_role')) filled++;
+    if (getRadioValue('t2_complexity')) filled++;
+    if (document.getElementById('t2_goal').value.trim()) filled++;
+    if (document.getElementById('t2_result').value.trim()) filled++;
+    if (document.getElementById('t2_value').value.trim()) filled++;
+  }
+
+  // 任务3（如显示）
+  if (document.getElementById('task3').style.display !== 'none') {
+    total += 8;
+    if (document.getElementById('t3_name').value.trim()) filled++;
+    if (getCheckedValues('t3_type').length > 0) filled++;
+    if (getRadioValue('t3_importance')) filled++;
+    if (getRadioValue('t3_role')) filled++;
+    if (getRadioValue('t3_complexity')) filled++;
+    if (document.getElementById('t3_goal').value.trim()) filled++;
+    if (document.getElementById('t3_result').value.trim()) filled++;
+    if (document.getElementById('t3_value').value.trim()) filled++;
+  }
+
+  // 第三部分：5项
+  total += 5;
+  if (document.getElementById('s_problem').value.trim()) filled++;
+  if (getCheckedValues('s_blocks').length > 0) filled++;
+  if (getRadioValue('s_handle')) filled++;
+  if (document.getElementById('s_best').value.trim()) filled++;
+  if (document.getElementById('s_optimize').value.trim()) filled++;
+
+  // 第四部分：2项
+  total += 2;
+  if (getRadioValue('a_usage')) filled++;
+  if (document.getElementById('a_help').value.trim()) filled++;
+
+  // 第五部分：3项
+  total += 3;
+  if (document.getElementById('g_strong').value.trim()) filled++;
+  if (document.getElementById('g_improve').value.trim()) filled++;
+  if (getCheckedValues('g_lack').length > 0) filled++;
+
+  // 第六部分（自我总结，必填）：1项
+  total += 1;
+  if (document.getElementById('summary').value.trim()) filled++;
+
+  const pct = Math.round(filled / total * 100);
+  document.getElementById('progressFill').style.width = pct + '%';
+  // 不显示百分比数字
+}
+
+// 监听所有输入以更新进度
+document.addEventListener('input', updateProgress);
+document.addEventListener('change', updateProgress);
+
+function getCheckedValues(groupId) {
+  const group = document.getElementById(groupId);
+  if (!group) return [];
+  return Array.from(group.querySelectorAll('input[type="checkbox"]:checked')).map(cb => {
+    if (cb.value === '其他') {
+      const label = cb.closest('label');
+      const textInput = label ? label.querySelector('input[type="text"]') : null;
+      if (textInput && textInput.value.trim()) {
+        return '其他：' + textInput.value.trim();
+      }
+    }
+    return cb.value;
+  });
+}
+
+function getRadioValue(groupId) {
+  const group = document.getElementById(groupId);
+  if (!group) return '';
+  const checked = group.querySelector('input[type="radio"]:checked');
+  return checked ? checked.value : '';
+}
+
+// ========== 表单验证 ==========
+function validateForm() {
+  const errors = [];
+
+  if (!document.getElementById('f_name').value.trim()) errors.push('请填写姓名');
+  if (!document.getElementById('f_month').value.trim()) errors.push('复盘时间异常，请刷新页面');
+
+  if (!document.getElementById('t1_name').value.trim()) errors.push('请填写核心任务1的任务名称');
+  if (getCheckedValues('t1_type').length === 0) errors.push('请选择核心任务1的任务类型');
+  if (!getRadioValue('t1_importance')) errors.push('请选择核心任务1的重要程度');
+  if (!getRadioValue('t1_role')) errors.push('请选择核心任务1的参与角色');
+  if (!getRadioValue('t1_complexity')) errors.push('请选择核心任务1的工作复杂度');
+  if (!document.getElementById('t1_goal').value.trim()) errors.push('请填写核心任务1的核心目标');
+  if (!document.getElementById('t1_result').value.trim()) errors.push('请填写核心任务1的实际结果');
+  if (!document.getElementById('t1_value').value.trim()) errors.push('请填写核心任务1的核心价值');
+
+  if (!document.getElementById('s_problem').value.trim()) errors.push('请填写主动推动解决的问题');
+  if (getCheckedValues('s_blocks').length === 0) errors.push('请选择执行阻碍');
+  if (!getRadioValue('s_handle')) errors.push('请选择问题处理方式');
+  if (!document.getElementById('s_best').value.trim()) errors.push('请填写协作效率最高的人');
+  if (!document.getElementById('s_optimize').value.trim()) errors.push('请填写团队最需要优化的问题');
+
+  if (!getRadioValue('a_usage')) errors.push('请选择AI使用情况');
+  if (!document.getElementById('a_help').value.trim()) errors.push('请填写AI的最大帮助');
+
+  if (!document.getElementById('g_strong').value.trim()) errors.push('请填写自己最强的能力');
+  if (!document.getElementById('g_improve').value.trim()) errors.push('请填写最需要提升的能力');
+  if (getCheckedValues('g_lack').length === 0) errors.push('请选择团队最缺的能力');
+
+  if (!document.getElementById('summary').value.trim()) errors.push('请填写本月最有价值的一件事（自我总结）');
+
+  return errors;
+}
+
+// ========== CSV导出 ==========
+function escapeCsv(val) {
+  if (!val) return '""';
+  if (val.includes(',') || val.includes('"') || val.includes('\n')) {
+    return '"' + val.replace(/"/g, '""') + '"';
+  }
+  return '"' + val + '"';
+}
+
+function getTodayStr() {
+  const d = new Date();
+  const y = d.getFullYear();
+  const m = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return y + m + day;
+}
+
+function submitForm() {
+  try {
+  const errors = validateForm();
+  if (errors.length > 0) {
+    const overlay = document.getElementById('successOverlay');
+    document.getElementById('successMsg').innerHTML = '<div class="error-box">请先完成以下必填项：<br>• ' + errors.join('<br>• ') + '</div>';
+    overlay.classList.add('show');
+    return;
+  }
+
+  const name = document.getElementById('f_name').value.trim();
+  const today = getTodayStr();
+
+  function getTaskData(n) {
+    const prefix = 't' + n;
+    const taskEl = document.getElementById('task' + n);
+    if (taskEl.style.display === 'none') return null;
+    return {
+      name: document.getElementById(prefix + '_name').value.trim(),
+      type: getCheckedValues(prefix + '_type').join('、'),
+      importance: getRadioValue(prefix + '_importance'),
+      role: getRadioValue(prefix + '_role'),
+      complexity: getRadioValue(prefix + '_complexity'),
+      goal: document.getElementById(prefix + '_goal').value.trim(),
+      result: document.getElementById(prefix + '_result').value.trim(),
+      value: document.getElementById(prefix + '_value').value.trim()
+    };
+  }
+
+  const task1 = getTaskData(1);
+  const task2 = getTaskData(2);
+  const task3 = getTaskData(3);
+
+  // 收集AI工具数据
+  const aiRows = [];
+  document.querySelectorAll('#aiTableBody tr').forEach(tr => {
+    const inputs = tr.querySelectorAll('input');
+    if (inputs[0].value.trim()) {
+      aiRows.push([inputs[0].value.trim(), inputs[1].value.trim(), inputs[2].value.trim()]);
+    }
+  });
+
+  const headers = [
+    '提交时间', '姓名', '复盘时间',
+    '任务1名称', '任务1类型', '任务1重要程度', '任务1角色', '任务1复杂度', '任务1目标', '任务1结果', '任务1价值',
+    '任务2名称', '任务2类型', '任务2重要程度', '任务2角色', '任务2复杂度', '任务2目标', '任务2结果', '任务2价值',
+    '任务3名称', '任务3类型', '任务3重要程度', '任务3角色', '任务3复杂度', '任务3目标', '任务3结果', '任务3价值',
+    'AI使用情况', 'AI工具及场景', 'AI最大帮助',
+    '最强能力', '最需提升能力', '团队最缺能力',
+    '自我总结', '主动解决问题', '执行阻碍', '问题处理方式', '协作效率最高的人', '团队最需优化问题'
+  ];
+
+  const aiToolStr = aiRows.map(r => r[0] + '(' + r[1] + ')').join('；');
+  const aiSceneStr = aiRows.map(r => r[2]).join('；');
+
+  const row = [
+    new Date().toLocaleString('zh-CN'),
+    name,
+    document.getElementById('f_month').value.trim(),
+    task1.name, task1.type, task1.importance, task1.role, task1.complexity, task1.goal, task1.result, task1.value,
+    task2 ? task2.name : '', task2 ? task2.type : '', task2 ? task2.importance : '', task2 ? task2.role : '', task2 ? task2.complexity : '', task2 ? task2.goal : '', task2 ? task2.result : '', task2 ? task2.value : '',
+    task3 ? task3.name : '', task3 ? task3.type : '', task3 ? task3.importance : '', task3 ? task3.role : '', task3 ? task3.complexity : '', task3 ? task3.goal : '', task3 ? task3.result : '', task3 ? task3.value : '',
+    getRadioValue('a_usage'),
+    aiToolStr,
+    document.getElementById('a_help').value.trim(),
+    document.getElementById('g_strong').value.trim(),
+    document.getElementById('g_improve').value.trim(),
+    getCheckedValues('g_lack').join('、'),
+    document.getElementById('summary').value.trim(),
+    document.getElementById('s_problem').value.trim(),
+    getCheckedValues('s_blocks').join('、'),
+    getRadioValue('s_handle'),
+    document.getElementById('s_best').value.trim(),
+    document.getElementById('s_optimize').value.trim()
+  ];
+
+  // 生成CSV内容（BOM + UTF-8）
+  let csv = '\uFEFF' + headers.map(h => escapeCsv(h)).join(',') + '\n';
+  csv += row.map(v => escapeCsv(v)).join(',') + '\n';
+
+  // 触发下载：文件名 = 姓名_填写日期.csv
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+  const fileName = name + '_' + today + '.csv';
+
+  // 手机端兼容处理
+  const isMobile = /Android|iPhone|iPad|iPod|Opera Mini/i.test(navigator.userAgent);
+
+  if (isMobile) {
+    // 手机端：优先使用 Web Share API，否则新标签页打开
+    if (navigator.share) {
+      const file = new File([blob], fileName, { type: 'text/csv' });
+      navigator.share({ files: [file], title: '复盘表' }).then(() => {
+        URL.revokeObjectURL(url);
+      }).catch(() => {
+        // 分享失败，降级为新标签页打开
+        window.open(url, '_blank');
+        setTimeout(() => URL.revokeObjectURL(url), 10000);
+      });
+    } else {
+      window.open(url, '_blank');
+      setTimeout(() => URL.revokeObjectURL(url), 10000);
+    }
+  } else {
+    // 桌面端：使用 download 属性直接下载
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = fileName;
+    a.click();
+    URL.revokeObjectURL(url);
+  }
+
+  // 清除草稿
+  safeLS.removeItem('org_review_draft');
+
+  // 显示成功：设置下载链接，手机端由用户手动点击触发下载
+  const dlLink = document.getElementById('downloadLink');
+  dlLink.href = url;
+  dlLink.download = fileName;
+  dlLink.style.display = 'inline-block';
+  document.getElementById('successMsg').innerHTML = ' CSV文件已生成（' + fileName + '），请点击下方按钮下载，然后发给<span style="color:#e53935;font-weight:700">文静</span>。';
+  document.getElementById('successOverlay').classList.add('show');
+
+  // 延迟释放 Blob URL（用户点击下载后再释放）
+  setTimeout(() => URL.revokeObjectURL(url), 60000);
+
+  } catch(e) {
+    // 出错时也显示提示
+    document.getElementById('successMsg').innerHTML = '<div class="error-box">提交出错：' + e.message + '，请截图联系文静。</div>';
+    document.getElementById('successOverlay').classList.add('show');
+  }
+}
+
+function closeOverlay() {
+  document.getElementById('successOverlay').classList.remove('show');
+  // 关闭弹窗时隐藏下载链接，避免残留
+  const dlLink = document.getElementById('downloadLink');
+  dlLink.style.display = 'none';
+  dlLink.href = '';
+}
+
+// ========== 自动保存草稿 ==========
+let saveTimer = null;
+function autoSave() {
+  clearTimeout(saveTimer);
+  saveTimer = setTimeout(() => {
+    const data = {};
+    document.querySelectorAll('#reviewForm input[type="text"], #reviewForm textarea').forEach(el => {
+      if (el.value) data[el.id] = el.value;
+    });
+    // 保存单选
+    document.querySelectorAll('.radio-group').forEach(g => {
+      const val = getRadioValue(g.id);
+      if (val) data[g.id] = val;
+    });
+    // 保存多选
+    document.querySelectorAll('.checkbox-group').forEach(g => {
+      const vals = getCheckedValues(g.id);
+      if (vals.length > 0) data[g.id] = vals;
+    });
+
+    safeLS.setItem('org_review_draft', JSON.stringify(data));
+    showToast('草稿已自动保存');
+  }, 30000);
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('draftToast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 2000);
+}
+
+// 监听输入自动保存
+document.addEventListener('input', autoSave);
+document.addEventListener('change', autoSave);
+
+// ========== 页面初始化 ==========
+window.addEventListener('load', () => {
+  // 设置复盘时间默认为当天日期（YYYY年M月D日）
+  const d = new Date();
+  const today = d.getFullYear() + '年' + (d.getMonth()+1) + '月' + d.getDate() + '日';
+  document.getElementById('reviewDate').textContent = '复盘时间：' + today;
+  document.getElementById('f_month').value = today;
+
+  // 恢复草稿
+  const draft = safeLS.getItem('org_review_draft');
+  if (draft) {
+    if (confirm('检测到有未完成的草稿，是否恢复？')) {
+      const data = JSON.parse(draft);
+      Object.keys(data).forEach(key => {
+        const el = document.getElementById(key);
+        if (el) {
+          el.value = data[key];
+          if (el.tagName === 'TEXTAREA') updateCharCount(el, el.maxLength);
+          // 恢复"其他"文本输入框时，自动勾选对应的checkbox
+          if (key.endsWith('_other') && el.value.trim()) {
+            const label = el.parentElement;
+            if (label && label.classList.contains('checkbox-item')) {
+              const cb = label.querySelector('input[type="checkbox"]');
+              if (cb) { cb.checked = true; label.classList.add('selected'); }
+            }
+          }
+        }
+        // 恢复单选
+        const group = document.getElementById(key);
+        if (group && group.classList.contains('radio-group')) {
+          const val = data[key];
+          group.querySelectorAll('.radio-item').forEach(item => {
+            if (item.querySelector('input').value === val) {
+              item.classList.add('selected');
+              item.querySelector('input').checked = true;
+            }
+          });
+        }
+        // 恢复多选
+        if (group && group.classList.contains('checkbox-group')) {
+          const vals = Array.isArray(data[key]) ? data[key] : [data[key]];
+          group.querySelectorAll('.checkbox-item').forEach(item => {
+            if (vals.includes(item.querySelector('input').value)) {
+              item.classList.add('selected');
+              item.querySelector('input').checked = true;
+            }
+          });
+        }
+      });
+      // 如果任务2/3有数据，显示它们
+      if (data['t2_name']) showTask(2);
+      if (data['t3_name']) showTask(3);
+
+      updateProgress();
+      showToast('草稿已恢复');
+    }
+  }
+  updateProgress();
+});
+</script>
+</body>
+</html>
