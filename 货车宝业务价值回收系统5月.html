@@ -1,0 +1,2391 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>货车宝业务价值回收系统 · 5月</title>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/4.4.1/chart.umd.js"></script>
+<style>
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  :root {
+    --brand: #1A6FF0;
+    --brand-light: #E8F0FD;
+    --brand-deep: #0F4AB5;
+    --green: #2D9B6A;
+    --green-light: #E4F5EC;
+    --amber: #C97A12;
+    --amber-light: #FDF3E0;
+    --red: #D64040;
+    --red-light: #FBEAEA;
+    --gray-900: #1A1A1A;
+    --gray-700: #444;
+    --gray-500: #777;
+    --gray-300: #CCC;
+    --gray-100: #F5F5F5;
+    --radius: 12px;
+    --radius-sm: 8px;
+  }
+  body {
+    font-family: -apple-system, 'PingFang SC', 'Helvetica Neue', sans-serif;
+    background: #F2F4F8;
+    min-height: 100vh;
+    color: var(--gray-900);
+    font-size: 14px;
+    line-height: 1.6;
+  }
+  .page { display: none; animation: fadeIn .3s ease; }
+  .page.active { display: block; }
+  @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: translateY(0); } }
+
+  /* ===== TOAST ===== */
+  .toast-overlay {
+    position: fixed;
+    top: 0; left: 0; right: 0; bottom: 0;
+    z-index: 9999;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding-top: 80px;
+    background: rgba(0,0,0,0.25);
+    animation: toastFadeIn .25s ease;
+  }
+  @keyframes toastFadeIn { from { opacity: 0; } to { opacity: 1; } }
+  .toast-box {
+    background: #fff;
+    border-radius: 16px;
+    padding: 24px 20px 18px;
+    max-width: 320px;
+    width: 90%;
+    text-align: center;
+    box-shadow: 0 8px 32px rgba(0,0,0,0.15);
+    animation: toastSlideIn .3s ease;
+  }
+  @keyframes toastSlideIn { from { opacity: 0; transform: translateY(-20px) scale(0.95); } to { opacity: 1; transform: translateY(0) scale(1); } }
+  .toast-icon {
+    font-size: 32px;
+    margin-bottom: 8px;
+  }
+  .toast-title {
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--gray-900);
+    margin-bottom: 6px;
+  }
+  .toast-msg {
+    font-size: 14px;
+    color: var(--gray-500);
+    line-height: 1.6;
+    margin-bottom: 16px;
+  }
+  .toast-msg li {
+    list-style: none;
+    padding: 3px 0;
+  }
+  .toast-btn {
+    background: var(--brand);
+    color: #fff;
+    border: none;
+    border-radius: 8px;
+    padding: 10px 40px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+  }
+
+  /* ===== HEADER ===== */
+  .header {
+    background: #fff;
+    border-bottom: 0.5px solid #E0E4EE;
+    padding: 14px 20px 10px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  .header-top {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 8px;
+  }
+  .logo { font-size: 15px; font-weight: 500; color: var(--brand); }
+  .logo span { color: var(--gray-500); font-size: 14px; font-weight: 400; }
+  .step-bar {
+    display: flex;
+    gap: 4px;
+    align-items: center;
+  }
+  .step-dot {
+    width: 24px;
+    height: 4px;
+    border-radius: 2px;
+    background: var(--gray-200, #E5E5E5);
+    transition: background .3s;
+  }
+  .step-dot.done { background: var(--brand); }
+  .step-dot.active { background: var(--brand); opacity: .5; }
+  .step-label { font-size: 14px; color: var(--gray-500); text-align: right; }
+
+  /* ===== MAIN ===== */
+  .main { padding: 20px 16px 80px; max-width: 480px; margin: 0 auto; }
+
+  /* ===== PAGE TITLE ===== */
+  .page-tag {
+    display: inline-block;
+    background: var(--brand-light);
+    color: var(--brand);
+    font-size: 14px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-bottom: 8px;
+  }
+  .page-title { font-size: 20px; font-weight: 500; color: var(--gray-900); margin-bottom: 4px; }
+  .page-subtitle { font-size: 14px; color: var(--gray-500); margin-bottom: 20px; }
+
+  /* ===== CARD ===== */
+  .card {
+    background: #fff;
+    border-radius: var(--radius);
+    border: 0.5px solid #E0E4EE;
+    padding: 16px;
+    margin-bottom: 12px;
+  }
+  .card-title {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-700);
+    margin-bottom: 12px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .card-title .icon {
+    width: 20px;
+    height: 20px;
+    border-radius: 6px;
+    background: var(--brand-light);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 14px;
+  }
+
+  /* ===== IDENTITY GRID ===== */
+  .identity-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: 8px;
+  }
+  .id-btn {
+    border: 1.5px solid #E0E4EE;
+    border-radius: var(--radius-sm);
+    padding: 12px 8px;
+    text-align: center;
+    cursor: pointer;
+    transition: all .2s;
+    background: #fff;
+  }
+  .id-btn .id-icon { font-size: 20px; margin-bottom: 4px; }
+  .id-btn .id-name { font-size: 14px; color: var(--gray-700); }
+  .id-btn.selected {
+    border-color: var(--brand);
+    background: var(--brand-light);
+  }
+  .id-btn.selected .id-name { color: var(--brand); font-weight: 500; }
+
+  /* ===== METRIC ROW ===== */
+  .metric-row {
+    display: flex;
+    align-items: center;
+    padding: 10px 12px;
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+    margin-bottom: 8px;
+  }
+  .metric-label { flex: 1; font-size: 14px; color: var(--gray-700); }
+  .metric-value { font-size: 15px; font-weight: 500; color: var(--brand); margin-right: 10px; }
+  .metric-sys { font-size: 14px; color: var(--gray-500); background: #E8E8E8; padding: 1px 6px; border-radius: 3px; }
+  .metric-confirm {
+    display: flex;
+    gap: 6px;
+    margin-top: 10px;
+  }
+
+  /* ===== BUTTONS ===== */
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    padding: 9px 18px;
+    border-radius: 8px;
+    font-size: 14px;
+    cursor: pointer;
+    border: none;
+    transition: all .2s;
+    font-family: inherit;
+  }
+  .btn-primary {
+    background: var(--brand);
+    color: #fff;
+    width: 100%;
+    padding: 13px;
+    font-size: 15px;
+    border-radius: var(--radius-sm);
+    font-weight: 500;
+  }
+  .btn-primary:hover { background: var(--brand-deep); }
+  .btn-primary.ready {
+    background: var(--brand-deep);
+    box-shadow: 0 2px 8px rgba(26,111,240,0.25);
+  }
+  .btn-outline {
+    background: #fff;
+    color: var(--brand);
+    border: 1.5px solid var(--brand);
+    flex: 1;
+    padding: 8px;
+  }
+  .btn-ghost {
+    background: var(--gray-100);
+    color: var(--gray-700);
+    flex: 1;
+    padding: 8px;
+  }
+  .btn-success {
+    background: var(--green);
+    color: #fff;
+    flex: 1;
+    padding: 8px;
+    font-size: 14px;
+  }
+
+  /* ===== TEXTAREA / INPUT ===== */
+  textarea, input[type="text"] {
+    width: 100%;
+    border: 1px solid #E0E4EE;
+    border-radius: var(--radius-sm);
+    padding: 10px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    color: var(--gray-900);
+    resize: none;
+    outline: none;
+    background: #FAFAFA;
+    line-height: 1.5;
+    transition: border-color .2s;
+  }
+  textarea:focus, input[type="text"]:focus { border-color: var(--brand); background: #fff; }
+
+  /* ===== CHECKBOX GRID ===== */
+  .check-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+  }
+  .check-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border: 1.5px solid #E0E4EE;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all .2s;
+    font-size: 14px;
+    color: var(--gray-700);
+    user-select: none;
+  }
+  .check-item.checked {
+    border-color: var(--brand);
+    background: var(--brand-light);
+    color: var(--brand);
+    font-weight: 500;
+  }
+  .check-item .ci-box {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #CCC;
+    border-radius: 4px;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all .2s;
+  }
+  .check-item.checked .ci-box {
+    border-color: var(--brand);
+    background: var(--brand);
+  }
+  .check-item.checked .ci-box::after {
+    content: '';
+    width: 4px;
+    height: 7px;
+    border-right: 2px solid #fff;
+    border-bottom: 2px solid #fff;
+    transform: rotate(40deg) translateY(-1px);
+    display: block;
+  }
+
+  /* ===== SWITCH TOGGLE ===== */
+  .switch-group { display: flex; border-radius: 8px; overflow: hidden; border: 1.5px solid #E0E4EE; }
+  .switch-btn {
+    padding: 6px 18px;
+    font-size: 14px;
+    cursor: pointer;
+    user-select: none;
+    color: var(--gray-500);
+    background: #fff;
+    transition: all .2s;
+    font-weight: 500;
+    border-right: 1px solid #E0E4EE;
+  }
+  .switch-btn:last-child { border-right: none; }
+  .switch-btn.active { background: var(--brand); color: #fff; }
+
+  /* ===== RADIO GRID ===== */
+  .radio-group { display: flex; flex-direction: column; gap: 8px; }
+  .radio-item {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    padding: 12px 14px;
+    border: 1.5px solid #E0E4EE;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all .2s;
+    user-select: none;
+  }
+  .radio-item.selected {
+    border-color: var(--brand);
+    background: var(--brand-light);
+  }
+  .radio-dot {
+    width: 16px;
+    height: 16px;
+    border: 1.5px solid #CCC;
+    border-radius: 50%;
+    flex-shrink: 0;
+    margin-top: 1px;
+    transition: all .2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .radio-item.selected .radio-dot {
+    border-color: var(--brand);
+  }
+  .radio-item.selected .radio-dot::after {
+    content: '';
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    background: var(--brand);
+    display: block;
+  }
+  .radio-label { font-size: 14px; color: var(--gray-700); }
+  .radio-item.selected .radio-label { color: var(--brand); font-weight: 500; }
+  .radio-desc { font-size: 14px; color: var(--gray-500); margin-top: 2px; }
+
+  /* ===== SECTION STEP ===== */
+  .step-num {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 22px;
+    height: 22px;
+    border-radius: 50%;
+    background: var(--brand);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .step-section { margin-bottom: 16px; }
+  .step-header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+  }
+  .step-title { font-size: 14px; font-weight: 500; color: var(--gray-700); }
+
+  /* ===== INPUT ROW ===== */
+  .input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+  }
+  .input-label {
+    font-size: 14px;
+    color: var(--gray-500);
+    flex-shrink: 0;
+    width: 70px;
+  }
+  input[type="number"] {
+    flex: 1;
+    border: 1px solid #E0E4EE;
+    border-radius: 6px;
+    padding: 8px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    background: #FAFAFA;
+  }
+  input[type="number"]:focus { border-color: var(--brand); background: #fff; }
+  .unit { font-size: 14px; color: var(--gray-500); flex-shrink: 0; }
+
+  /* ===== TOGGLE ===== */
+  .toggle-row {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 10px 0;
+    border-bottom: 0.5px solid #F0F0F0;
+  }
+  .toggle-row:last-child { border-bottom: none; }
+  .toggle-label { font-size: 14px; color: var(--gray-700); }
+  .toggle-switch {
+    width: 40px;
+    height: 22px;
+    border-radius: 11px;
+    background: #DDD;
+    cursor: pointer;
+    position: relative;
+    transition: background .2s;
+    flex-shrink: 0;
+  }
+  .toggle-switch.on { background: var(--brand); }
+  .toggle-switch::after {
+    content: '';
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: #fff;
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    transition: transform .2s;
+  }
+  .toggle-switch.on::after { transform: translateX(18px); }
+
+  /* ===== GRADE GRID ===== */
+  .grade-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+  .grade-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 14px;
+    border: 1.5px solid #E0E4EE;
+    border-radius: var(--radius-sm);
+    cursor: pointer;
+    transition: all .2s;
+    user-select: none;
+  }
+  .grade-badge {
+    width: 32px;
+    height: 32px;
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 16px;
+    font-weight: 500;
+    flex-shrink: 0;
+  }
+  .grade-info { flex: 1; }
+  .grade-name { font-size: 14px; font-weight: 500; color: var(--gray-900); }
+  .grade-desc { font-size: 14px; color: var(--gray-500); margin-top: 1px; }
+  .grade-item.selected { border-color: var(--brand); background: var(--brand-light); }
+  .grade-item.selected .grade-name { color: var(--brand); }
+
+  /* ===== RESULT PAGE ===== */
+  .result-header {
+    background: var(--brand);
+    border-radius: var(--radius);
+    padding: 20px;
+    margin-bottom: 12px;
+    color: #fff;
+    text-align: center;
+  }
+  .result-score {
+    font-size: 52px;
+    font-weight: 500;
+    line-height: 1;
+    margin: 8px 0 4px;
+  }
+  .result-grade {
+    display: inline-block;
+    background: rgba(255,255,255,.2);
+    border-radius: 6px;
+    padding: 4px 12px;
+    font-size: 14px;
+  }
+  .result-title { font-size: 14px; opacity: .85; margin-bottom: 4px; }
+
+  .radar-wrap {
+    position: relative;
+    width: 100%;
+    height: 260px;
+  }
+
+  .dim-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 8px;
+  }
+  .dim-bar-label { width: 60px; font-size: 14px; color: var(--gray-700); flex-shrink: 0; }
+  .dim-bar-track {
+    flex: 1;
+    height: 8px;
+    background: #EEE;
+    border-radius: 4px;
+    overflow: hidden;
+  }
+  .dim-bar-fill {
+    height: 100%;
+    border-radius: 4px;
+    background: var(--brand);
+    transition: width .8s ease;
+  }
+  .dim-bar-val { width: 36px; font-size: 14px; color: var(--gray-500); text-align: right; flex-shrink: 0; }
+
+  .position-card {
+    background: var(--green-light);
+    border: 1px solid #A8DBC3;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 12px;
+  }
+  .position-badge {
+    display: inline-block;
+    background: var(--green);
+    color: #fff;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 4px;
+    margin-bottom: 6px;
+  }
+  .position-title { font-size: 15px; font-weight: 500; color: var(--gray-900); margin-bottom: 4px; }
+  .position-desc { font-size: 14px; color: var(--gray-700); line-height: 1.5; }
+
+  .suggest-card {
+    background: var(--amber-light);
+    border: 1px solid #F5CFA0;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+  }
+  .suggest-title { font-size: 14px; font-weight: 500; color: var(--amber); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
+  .suggest-text { font-size: 14px; color: var(--gray-700); line-height: 1.6; }
+
+  /* ===== BOTTOM NAV ===== */
+  .bottom-nav {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background: #fff;
+    border-top: 0.5px solid #E0E4EE;
+    padding: 12px 16px;
+    max-width: 480px;
+    margin: 0 auto;
+    z-index: 100;
+  }
+  .nav-inner {
+    display: flex;
+    gap: 8px;
+    max-width: 448px;
+    margin: 0 auto;
+  }
+
+  /* ===== MISC ===== */
+  .tip {
+    font-size: 14px;
+    color: var(--gray-500);
+    background: var(--gray-100);
+    padding: 8px 12px;
+    border-radius: 6px;
+    margin-top: 8px;
+    line-height: 1.5;
+  }
+  .tip strong { color: var(--brand); }
+  .divider { border: none; border-top: 0.5px solid #F0F0F0; margin: 14px 0; }
+  .tag {
+    display: inline-block;
+    font-size: 14px;
+    padding: 2px 7px;
+    border-radius: 4px;
+    margin-right: 4px;
+  }
+  .tag-sys { background: #E8E8E8; color: #666; }
+  .tag-user { background: var(--brand-light); color: var(--brand); }
+  .tag-key { background: #FFF0D6; color: #B07800; }
+
+  /* ===== ABILITY PROFILE (P6) ===== */
+  .ability-badge {
+    display: inline-block;
+    font-size: 14px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    margin-left: 6px;
+    vertical-align: middle;
+  }
+  .ability-badge.strong { background: var(--green-light); color: var(--green); }
+  .ability-badge.mid { background: var(--amber-light); color: var(--amber); }
+  .ability-badge.weak { background: var(--red-light); color: var(--red); }
+
+  .ability-card {
+    background: #fff;
+    border-radius: var(--radius);
+    border: 0.5px solid #E0E4EE;
+    padding: 14px 16px;
+    margin-bottom: 10px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+  }
+  .ability-card .ab-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+  }
+  .ability-card .ab-name {
+    font-size: 14px;
+    font-weight: 500;
+    color: var(--gray-900);
+  }
+  .ability-card .ab-evidence {
+    font-size: 14px;
+    color: var(--gray-500);
+    line-height: 1.5;
+  }
+
+  .suggest-card-ability {
+    background: var(--brand-light);
+    border: 1px solid #A8C8F5;
+    border-radius: var(--radius-sm);
+    padding: 14px 16px;
+    margin-bottom: 10px;
+  }
+  .suggest-card-ability .suggest-item {
+    font-size: 14px;
+    color: var(--gray-700);
+    line-height: 1.6;
+    padding: 4px 0;
+  }
+  .suggest-card-ability .suggest-item::before {
+    content: '';
+    display: inline-block;
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+    background: var(--brand);
+    margin-right: 8px;
+    vertical-align: middle;
+  }
+
+  .confirmed-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 14px;
+    color: var(--green);
+    font-weight: 500;
+  }
+  .note-area { margin-top: 8px; }
+  .note-toggle {
+    font-size: 14px;
+    color: var(--brand);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 3px;
+    background: none;
+    border: none;
+    font-family: inherit;
+    padding: 0;
+  }
+  .note-box { display: none; margin-top: 6px; }
+  .score-detail {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .score-box {
+    background: var(--gray-100);
+    border-radius: var(--radius-sm);
+    padding: 12px;
+    text-align: center;
+  }
+  .score-box .s-label { font-size: 14px; color: var(--gray-500); margin-bottom: 4px; }
+  .score-box .s-val { font-size: 22px; font-weight: 500; color: var(--brand); }
+  .score-box .s-sub { font-size: 14px; color: var(--gray-500); }
+
+  /* ===== COLLAB ===== */
+  .no-comment-flag {
+    font-size: 14px;
+    color: var(--gray-500);
+    text-align: center;
+    padding-top: 10px;
+    border-top: 0.5px dashed #E0E4EE;
+    margin-top: 10px;
+    letter-spacing: 0.5px;
+  }
+  .collab-name, .collab-content {
+    width: 100%;
+    border: 1px solid #E0E4EE;
+    border-radius: 6px;
+    padding: 9px 12px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    background: #FAFAFA;
+  }
+  .collab-name:focus, .collab-content:focus { border-color: var(--brand); background: #fff; }
+
+  /* Compact rating row */
+  .collab-rating-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-top: 10px;
+    font-size: 14px;
+  }
+  .collab-rating-label {
+    color: var(--gray-500);
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+  .collab-rating-options {
+    display: flex;
+    gap: 4px;
+    flex: 1;
+  }
+  .collab-rating-btn {
+    flex: 1;
+    padding: 6px 4px;
+    border: 1px solid #E0E4EE;
+    border-radius: 5px;
+    background: #fff;
+    font-size: 14px;
+    color: var(--gray-700);
+    cursor: pointer;
+    text-align: center;
+    transition: all .2s;
+    font-family: inherit;
+  }
+  .collab-rating-btn.selected {
+    border-color: var(--brand);
+    background: var(--brand-light);
+    color: var(--brand);
+    font-weight: 500;
+  }
+
+  /* ===== METRIC INPUT ===== */
+  .metric-input-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 8px;
+    padding: 8px;
+    background: var(--gray-100);
+    border-radius: 6px;
+  }
+  .metric-input-row input {
+    flex: 1;
+    border: 1px solid #E0E4EE;
+    border-radius: 6px;
+    padding: 7px 10px;
+    font-size: 14px;
+    font-family: inherit;
+    outline: none;
+    background: #fff;
+  }
+  .metric-input-row input:focus { border-color: var(--brand); }
+  .metric-remove {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    border: none;
+    background: var(--red-light);
+    color: var(--red);
+    font-size: 14px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-top">
+    <div class="logo">货车宝 <span>业务价值回收系统</span></div>
+    <div class="step-label" id="stepLabel">1 / 6</div>
+  </div>
+  <div class="step-bar" id="stepBar"></div>
+</div>
+
+<!-- ======================== P1 首页 ======================== -->
+<div class="page active" id="page1">
+  <div class="main">
+    <div class="page-tag">05月 · 价值回收</div>
+    <div class="page-title">本月业务价值回收</div>
+    <div class="page-subtitle">贡献价值 = 业务结果 + 主动推动 + 系统效率</div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">👤</div>选择你的岗位</div>
+      <div class="identity-grid" id="identityGrid">
+        <div class="id-btn" data-role="member" onclick="selectRole(this)">
+          <div class="id-icon">🏅</div>
+          <div class="id-name">会员</div>
+        </div>
+        <div class="id-btn" data-role="commerce" onclick="selectRole(this)">
+          <div class="id-icon">💼</div>
+          <div class="id-name">商业</div>
+        </div>
+        <div class="id-btn" data-role="freight" onclick="selectRole(this)">
+          <div class="id-icon">🚛</div>
+          <div class="id-name">货源</div>
+        </div>
+        <div class="id-btn" data-role="rescue" onclick="selectRole(this)">
+          <div class="id-icon">🛠</div>
+          <div class="id-name">救援</div>
+        </div>
+        <div class="id-btn" data-role="tech" onclick="selectRole(this)">
+          <div class="id-icon">💻</div>
+          <div class="id-name">技术</div>
+        </div>
+        <div class="id-btn" data-role="ops" onclick="selectRole(this)">
+          <div class="id-icon">📊</div>
+          <div class="id-name">运营/其他</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">✍</div>填写你的姓名</div>
+      <input type="text" id="userName" placeholder="请输入姓名（用于报告显示）" />
+    </div>
+
+    <div class="tip">
+      <strong>系统说明：</strong>请按岗位填写本月核心业务指标，完整填报后系统自动计算价值等级，整个流程约 5 分钟完成。
+    </div>
+  </div>
+  <div class="bottom-nav"><div class="nav-inner">
+    <button class="btn btn-primary" onclick="goTo(2)" id="p1Next">开始填报</button>
+  </div></div>
+</div>
+
+<!-- ======================== P2 业务结果层（自填） ======================== -->
+<div class="page" id="page2">
+  <div class="main">
+    <div class="page-tag">P2 · 业务结果</div>
+    <div class="page-title">本月你的业务结果</div>
+    <div class="page-subtitle" id="p2Subtitle">请填写本月岗位核心指标，至少填3项</div>
+
+    <div class="card" id="metricsCard">
+      <div class="card-title"><div class="icon">📈</div>关键指标填写</div>
+      <div id="metricFields"></div>
+      <div style="margin-top:12px;">
+        <button class="btn btn-ghost" onclick="addMetricRow()" style="font-size:13px;padding:8px;justify-content:flex-start;color:var(--brand);background:var(--brand-light);border:none;">
+          + 添加更多指标
+        </button>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">📝</div>数据说明</div>
+      <textarea id="dataNote" rows="3" placeholder="如有特殊情况或数据背景，请在此补充说明...（选填）"></textarea>
+    </div>
+
+    <div class="tip" id="p2Tip">
+      <strong>填写指引：</strong>请根据你的岗位角色，填写本月最关键的3项业务结果指标。每条指标需包含名称、数据、计算口径。确保数据真实可验证。
+    </div>
+  </div>
+  <div class="bottom-nav"><div class="nav-inner">
+    <button class="btn btn-ghost" onclick="goTo(1)" style="max-width:80px;">返回</button>
+    <button class="btn btn-primary" onclick="goTo(3)">下一步 · 主动价值</button>
+  </div></div>
+</div>
+
+<!-- ======================== P3 主动价值层 ======================== -->
+<div class="page" id="page3">
+  <div class="main">
+    <div class="page-tag">P3 · 主动价值 <span class="tag tag-key">评分关键区</span></div>
+    <div class="page-title">你本月主动推动了哪些业务改变？</div>
+    <div class="page-subtitle">选择"有"后完整填写三段，系统将计算你的主动性系数</div>
+
+    <!-- 有无主动推进开关 -->
+    <div class="card" style="display:flex;align-items:center;justify-content:space-between;">
+      <div style="font-size:14px;font-weight:500;">本月是否主动推进了业务改变？</div>
+      <div class="switch-group" id="proactiveSwitch" style="display:flex;gap:0;">
+        <div class="switch-btn active" data-proactive="yes" onclick="toggleProactive(this)">有</div>
+        <div class="switch-btn" data-proactive="no" onclick="toggleProactive(this)">无</div>
+      </div>
+    </div>
+
+    <!-- P3填写区域 -->
+    <div id="proactiveSection">
+    <!-- Step 1 -->
+    <div class="card step-section">
+      <div class="step-header">
+        <div class="step-num">1</div>
+        <div class="step-title">发现了什么问题？</div>
+      </div>
+      <textarea id="problem" rows="2" placeholder="一句话描述：你发现的业务问题或机会...（例如：客户留存率下降原因不明）"></textarea>
+    </div>
+
+    <!-- Step 2 -->
+    <div class="card step-section">
+      <div class="step-header">
+        <div class="step-num">2</div>
+        <div class="step-title">你推动了哪些动作？（可多选）</div>
+      </div>
+      <div class="check-grid" id="actionGrid">
+        <div class="check-item" onclick="toggleCheck(this)" data-val="提方案">
+          <div class="ci-box"></div>提方案
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)" data-val="推跨部门">
+          <div class="ci-box"></div>推跨部门
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)" data-val="改流程">
+          <div class="ci-box"></div>改流程
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)" data-val="用AI优化">
+          <div class="ci-box"></div>用AI优化
+        </div>
+      </div>
+      <div style="margin-top:10px;">
+        <textarea id="actionNote" rows="2" placeholder="请描述推动细节和具体动作（必填）..." required></textarea>
+      </div>
+    </div>
+
+    <!-- Step 3 -->
+    <div class="card step-section">
+      <div class="step-header">
+        <div class="step-num">3</div>
+        <div class="step-title">产生了什么业务变化？（可多选）</div>
+      </div>
+      <div class="check-grid" id="resultGrid">
+        <div class="check-item" onclick="toggleCheck(this)" data-val="有明确结果">
+          <div class="ci-box"></div>有明确结果
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)" data-val="过程推进中">
+          <div class="ci-box"></div>过程推进中
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)" data-val="推动但未落地">
+          <div class="ci-box"></div>推动但未落地
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)" data-val="暂无">
+          <div class="ci-box"></div>暂无
+        </div>
+      </div>
+      <div style="margin-top:10px;">
+        <textarea id="resultNote" rows="2" placeholder="描述具体变化或结果（必填）..." required></textarea>
+      </div>
+    </div>
+  </div>
+  </div><!-- /proactiveSection -->
+  <div class="bottom-nav"><div class="nav-inner">
+    <button class="btn btn-ghost" onclick="goTo(2)" style="max-width:80px;">返回</button>
+    <button class="btn btn-primary" onclick="goTo(4)">下一步 · 效率提升</button>
+  </div></div>
+</div>
+
+<!-- ======================== P4 效率/AI能力层 ======================== -->
+<div class="page" id="page4">
+  <div class="main">
+    <div class="page-tag">P4 · 效率与AI</div>
+    <div class="page-title">你如何提升组织效率？</div>
+    <div class="page-subtitle">判断你的未来价值能力</div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">⚡</div>本月使用了哪些提效方式？（可多选）</div>
+      <div style="display:flex;flex-direction:column;gap:8px;" id="effGrid">
+        <div class="check-item" onclick="toggleCheck(this)" data-val="使用AI生成内容">
+          <div class="ci-box"></div>使用AI生成内容
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)" data-val="使用AI分析数据">
+          <div class="ci-box"></div>使用AI分析数据
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)" data-val="自动化流程">
+          <div class="ci-box"></div>自动化流程
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)" data-val="工具优化">
+          <div class="ci-box"></div>工具优化
+        </div>
+        <div class="check-item" onclick="toggleCheck(this)" data-val="无优化">
+          <div class="ci-box"></div>本月无优化行为
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">⏱</div>效率数据估算</div>
+      <div class="input-row">
+        <div class="input-label">节省时间</div>
+        <input type="number" id="timeSaved" placeholder="0" min="0" max="100" />
+        <div class="unit">小时/月</div>
+      </div>
+      <hr class="divider">
+      <div class="toggle-row">
+        <div class="toggle-label">此方法是否可被团队复用？</div>
+        <div class="toggle-switch" id="reuseToggle" onclick="toggleSwitch(this)"></div>
+      </div>
+      <div style="margin-top:10px;">
+        <textarea id="effNote" rows="2" placeholder="简述提效方法或工具（选填）..."></textarea>
+      </div>
+    </div>
+  </div>
+  <div class="bottom-nav"><div class="nav-inner">
+    <button class="btn btn-ghost" onclick="goTo(3)" style="max-width:80px;">返回</button>
+    <button class="btn btn-primary" onclick="goTo(5)">下一步 · 协同模块</button>
+  </div></div>
+</div>
+
+<!-- ======================== P5 协同模块 ======================== -->
+<div class="page" id="page5">
+  <div class="main">
+    <div class="page-tag">P5 · 协同模块</div>
+    <div class="page-title">本月你的协同伙伴</div>
+    <div class="page-subtitle">添加Top 3协同对象并评分（不允许开放评论）</div>
+
+    <!-- 协同对象1 -->
+    <div class="card" id="collabCard1">
+      <div class="card-title">
+        <div class="icon" style="background:var(--brand-light);color:var(--brand);font-weight:500;">1</div>
+        协同对象
+      </div>
+      <div style="margin-bottom:10px;">
+        <input type="text" class="collab-name" placeholder="请输入协同对象姓名" />
+        <input type="text" class="collab-content" placeholder="协同内容（如：联合推进XX项目上线）" style="margin-top:8px;" />
+      </div>
+      <div class="collab-rating-row">
+        <span class="collab-rating-label">响应速度</span>
+        <div class="collab-rating-options" id="speed1">
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="快">快</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="中">中</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="慢">慢</div>
+        </div>
+      </div>
+      <div class="collab-rating-row">
+        <span class="collab-rating-label">协同成本</span>
+        <div class="collab-rating-options" id="cost1">
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="降低">降低</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="不变">不变</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="增加">增加</div>
+        </div>
+      </div>
+      <div class="collab-rating-row">
+        <span class="collab-rating-label">结果帮助</span>
+        <div class="collab-rating-options" id="help1">
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="强">强</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="中">中</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="弱">弱</div>
+        </div>
+      </div>
+      <div class="no-comment-flag">不允许开放评论</div>
+    </div>
+
+    <!-- 协同对象2 -->
+    <div class="card collab-inactive" id="collabCard2" style="opacity:0.45;cursor:pointer;border:1.5px dashed #CCC;" onclick="activateCollabCard(2)">
+      <div class="card-title">
+        <div class="icon" style="background:#F0F0F0;color:#999;font-weight:500;">2</div>
+        协同对象 <span style="font-size:12px;color:var(--brand);margin-left:6px;font-weight:500;">＋ 点击添加</span>
+      </div>
+      <div style="text-align:center;padding:14px 0;color:var(--gray-500);font-size:12px;">点击此处添加第二个协同对象</div>
+    </div>
+
+    <!-- 协同对象3 -->
+    <div class="card collab-inactive" id="collabCard3" style="opacity:0.45;cursor:pointer;border:1.5px dashed #CCC;" onclick="activateCollabCard(3)">
+      <div class="card-title">
+        <div class="icon" style="background:#F0F0F0;color:#999;font-weight:500;">3</div>
+        协同对象 <span style="font-size:12px;color:var(--brand);margin-left:6px;font-weight:500;">＋ 点击添加</span>
+      </div>
+      <div style="text-align:center;padding:14px 0;color:var(--gray-500);font-size:12px;">点击此处添加第三个协同对象</div>
+    </div>
+
+    <div class="tip">
+      <strong>协同说明：</strong>至少填写1位协同对象并完成三维评分。仅支持结构化评分，不开放自由评论，确保评估客观公正。
+    </div>
+  </div>
+  <div class="bottom-nav"><div class="nav-inner">
+    <button class="btn btn-ghost" onclick="goTo(4)" style="max-width:80px;">返回</button>
+    <button class="btn btn-primary" onclick="goTo(6)">下一步 · 业务贡献自评</button>
+  </div></div>
+</div>
+
+<!-- ======================== P6 能力画像（系统生成） ======================== -->
+<div class="page" id="page6">
+  <div class="main">
+    <div class="page-tag">P6 · 能力画像 <span class="tag tag-sys">系统生成</span></div>
+    <div class="page-title">你的业务能力画像</div>
+    <div class="page-subtitle">基于你的业务贡献数据自动生成，无需额外填写</div>
+
+    <!-- 能力雷达图 -->
+    <div class="card">
+      <div class="card-title"><div class="icon">📡</div>能力六维雷达图</div>
+      <div class="radar-wrap"><canvas id="abilityRadarChart" role="img" aria-label="能力画像雷达图"></canvas></div>
+    </div>
+
+    <!-- 能力解释卡片 -->
+    <div id="abilityCards"></div>
+
+    <!-- 短板提示 -->
+    <div id="weaknessAlert" style="display:none;">
+      <div class="card" style="background:var(--red-light);border:1px solid #F5A0A0;">
+        <div class="card-title" style="color:var(--red);"><div class="icon" style="background:var(--red-light);color:var(--red);">!</div>能力短板提示</div>
+        <div style="font-size:13px;color:var(--gray-700);line-height:1.6;" id="weaknessText"></div>
+      </div>
+    </div>
+
+    <!-- 成长建议 -->
+    <div id="growthSuggestions"></div>
+
+    <!-- 认可反馈 -->
+    <div class="card">
+      <div class="card-title"><div class="icon">👍</div>认可与反馈</div>
+      <div style="font-size:13px;color:var(--gray-500);margin-bottom:12px;">以上能力画像是否准确反映了你的实际情况？</div>
+      <div style="display:flex;gap:8px;" id="feedbackGroup">
+        <button class="btn btn-success" onclick="handleAbilityFeedback(true)" id="btnAccept">✔ 认可</button>
+        <button class="btn btn-outline" onclick="handleAbilityFeedback(false)" id="btnDisagree">✏ 有部分不准确</button>
+      </div>
+      <div id="feedbackNoteBox" style="display:none;margin-top:10px;">
+        <textarea id="feedbackNote" rows="2" placeholder="请补充一句说明：哪里不准确..."></textarea>
+        <button class="btn btn-primary" onclick="submitAbilityFeedback()" style="margin-top:8px;">确认提交反馈</button>
+      </div>
+      <div id="feedbackConfirmed" style="display:none;margin-top:10px;padding:10px;background:var(--green-light);border-radius:8px;text-align:center;color:var(--green);font-weight:500;">反馈已记录，点击下一步继续</div>
+    </div>
+
+    <div class="tip"><strong>说明：</strong>能力画像由系统基于你的填报数据自动生成，用于帮助你了解自身能力结构。认可或补充反馈后即可进入自评环节。</div>
+  </div>
+  <div class="bottom-nav"><div class="nav-inner">
+    <button class="btn btn-ghost" onclick="goTo(5)" style="max-width:80px;">返回</button>
+    <button class="btn btn-primary" onclick="goTo(7)">下一步 · 自评提交</button>
+  </div></div>
+</div>
+
+<!-- ======================== P7 自评 + 提交 ======================== -->
+<div class="page" id="page7">
+  <div class="main">
+    <div class="page-tag">P7 · 业务贡献自评</div>
+    <div class="page-title">你的本月业务贡献等级</div>
+    <div class="page-subtitle">根据你的业务贡献真实判断选择，提交后系统自动计算贡献等级</div>
+
+    <div class="card">
+      <div class="card-title"><div class="icon">🏆</div>选择你的自评等级</div>
+      <div class="grade-grid" id="gradeGrid">
+        <div class="grade-item" onclick="selectGrade(this)" data-grade="S" data-coeff="1.3">
+          <div class="grade-badge" style="background:#FFF0D6;color:#B07800;">S</div>
+          <div class="grade-info">
+            <div class="grade-name">业务驱动者</div>
+            <div class="grade-desc">本月显著推动业务增长，有明确数据贡献结果</div>
+          </div>
+        </div>
+        <div class="grade-item" onclick="selectGrade(this)" data-grade="A" data-coeff="1.2">
+          <div class="grade-badge" style="background:#E4F5EC;color:#2D9B6A;">A</div>
+          <div class="grade-info">
+            <div class="grade-name">主动贡献者</div>
+            <div class="grade-desc">主动发现并推动解决业务问题，有正向贡献影响</div>
+          </div>
+        </div>
+        <div class="grade-item" onclick="selectGrade(this)" data-grade="B" data-coeff="1.0">
+          <div class="grade-badge" style="background:#E8F0FD;color:#1A6FF0;">B</div>
+          <div class="grade-info">
+            <div class="grade-name">稳定执行</div>
+            <div class="grade-desc">完成既定业务任务，贡献质量稳定</div>
+          </div>
+        </div>
+        <div class="grade-item" onclick="selectGrade(this)" data-grade="C" data-coeff="0.9">
+          <div class="grade-badge" style="background:#F5F5F5;color:#777;">C</div>
+          <div class="grade-info">
+            <div class="grade-name">被动响应</div>
+            <div class="grade-desc">多为被动响应业务需求，缺少主动推动</div>
+          </div>
+        </div>
+        <div class="grade-item" onclick="selectGrade(this)" data-grade="D" data-coeff="0.8">
+          <div class="grade-badge" style="background:#FBEAEA;color:#D64040;">D</div>
+          <div class="grade-info">
+            <div class="grade-name">低贡献</div>
+            <div class="grade-desc">本月业务贡献较弱，需要复盘改进</div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="tip"><strong>提示：</strong>请如实选择你的业务贡献等级。系统将基于你的填报数据自动计算最终结果。本评估仅用于个人成长参考，不影响绩效考核。</div>
+  </div>
+  <div class="bottom-nav"><div class="nav-inner">
+    <button class="btn btn-ghost" onclick="goTo(6)" style="max-width:80px;">返回</button>
+    <button class="btn btn-primary" onclick="handleSubmit()" id="submitBtn">提交并查看结果</button>
+  </div></div>
+</div>
+
+<!-- ======================== P8 结果页 ======================== -->
+<div class="page" id="page8">
+  <div class="main">
+    <div class="page-tag">结果已生成</div>
+
+    <!-- 分数头 -->
+    <div class="result-header">
+      <div class="result-title" id="resultName">你好，— · 5月业务贡献报告</div>
+      <div class="result-score" id="resultScore">—</div>
+      <div class="result-score-range" id="resultScoreRange" style="font-size:13px;opacity:0.7;margin-top:2px;"></div>
+      <div id="resultGradeBadge" class="result-grade">计算中...</div>
+    </div>
+
+    <!-- 免责声明 -->
+    <div class="card" style="background:#F8FAFF;border:1px solid #D6E4FD;text-align:center;margin-bottom:12px;">
+      <div style="font-size:13px;color:var(--brand);font-weight:500;">本评估结果仅用于个人成长参考</div>
+      <div style="font-size:11px;color:var(--gray-500);margin-top:4px;">不影响绩效考核，请如实填写，关注自身成长趋势</div>
+    </div>
+
+    <!-- 四维分解 -->
+    <div class="card">
+      <div class="card-title"><div class="icon">📊</div>四维评分分解</div>
+      <div class="score-detail" id="scoreDimGrid"></div>
+    </div>
+
+    <!-- 雷达图 -->
+    <div class="card">
+      <div class="card-title"><div class="icon">📡</div>业务贡献雷达图</div>
+      <div class="radar-wrap">
+        <canvas id="radarChart" role="img" aria-label="业务贡献雷达图">业务贡献四维雷达图</canvas>
+      </div>
+    </div>
+
+    <!-- 组织定位 -->
+    <div class="position-card" id="positionCard">
+      <div class="position-badge" id="positionBadge">—</div>
+      <div class="position-title" id="positionTitle">—</div>
+      <div class="position-desc" id="positionDesc">—</div>
+    </div>
+
+    <!-- AI 建议 -->
+    <div class="suggest-card">
+      <div class="suggest-title">业务贡献成长建议</div>
+      <div class="suggest-text" id="aiSuggest">正在生成建议...</div>
+    </div>
+
+    <!-- 主动性 -->
+    <div class="card" style="margin-top:12px;">
+      <div class="card-title"><div class="icon">⚡</div>主动性系数详情</div>
+      <div class="dim-bar-row">
+        <div class="dim-bar-label">主动性</div>
+        <div class="dim-bar-track"><div class="dim-bar-fill" id="proactiveBar" style="width:0%"></div></div>
+        <div class="dim-bar-val" id="proactiveVal">—</div>
+      </div>
+      <div class="dim-bar-row">
+        <div class="dim-bar-label">收入贡献</div>
+        <div class="dim-bar-track"><div class="dim-bar-fill" id="bar1" style="width:0%;background:#378ADD"></div></div>
+        <div class="dim-bar-val" id="barVal1">—</div>
+      </div>
+      <div class="dim-bar-row">
+        <div class="dim-bar-label">成本优化</div>
+        <div class="dim-bar-track"><div class="dim-bar-fill" id="bar2" style="width:0%;background:#2D9B6A"></div></div>
+        <div class="dim-bar-val" id="barVal2">—</div>
+      </div>
+      <div class="dim-bar-row">
+        <div class="dim-bar-label">效率提升</div>
+        <div class="dim-bar-track"><div class="dim-bar-fill" id="bar3" style="width:0%;background:#C97A12"></div></div>
+        <div class="dim-bar-val" id="barVal3">—</div>
+      </div>
+      <div class="dim-bar-row">
+        <div class="dim-bar-label">协同贡献</div>
+        <div class="dim-bar-track"><div class="dim-bar-fill" id="bar4" style="width:0%;background:#7F77DD"></div></div>
+        <div class="dim-bar-val" id="barVal4">—</div>
+      </div>
+    </div>
+
+    <!-- CSV下载提示 -->
+    <div id="csvExportTip" style="display:none;margin-top:16px;background:#FFF5F5;border:2px solid #D64040;border-radius:12px;padding:16px 14px;text-align:center;">
+      <div style="font-size:15px;font-weight:700;color:#D64040;margin-bottom:8px;">请将下载的CSV文件发送给文静</div>
+      <div style="font-size:12px;color:#888;margin-bottom:12px;">文件已自动下载，请在钉钉中发送给文静</div>
+      <button id="reDownloadBtn" style="display:none;background:#D64040;color:#fff;border:none;border-radius:8px;padding:10px 24px;font-size:14px;font-weight:600;cursor:pointer;" onclick="downloadCSV()">重新下载 CSV</button>
+    </div>
+
+    <button class="btn btn-primary" style="margin-top:8px;" onclick="restartForm()">查看填写内容</button>
+  </div>
+</div>
+
+<script>
+// ========== STATE ==========
+const state = {
+  currentPage: 1,
+  role: '',
+  userName: '',
+  metricCount: 3,
+  selfGrade: '',
+  selfCoeff: 1.0,
+  // 能力画像状态
+  abilityProfile: null,
+  abilityFeedbackAccepted: false,
+  abilityFeedbackNote: ''
+};
+
+// ========== ROLE METRIC TEMPLATES ==========
+const roleMetricLabels = {
+  member: ['', '', ''],
+  commerce: ['', '', ''],
+  freight: ['', '', ''],
+  rescue: ['', '', ''],
+  tech: ['', '', ''],
+  ops: ['', '', '']
+};
+
+// 按岗位差异化的指标填写引导语
+const roleMetricPlaceholders = {
+  member: {
+    name: '填写会员业务核心指标名称',
+    value: '填写该指标的本月数据',
+    note: '数据来源或计算口径（选填）'
+  },
+  commerce: {
+    name: '填写商业业务核心指标名称',
+    value: '填写该指标的本月数据',
+    note: '数据来源或计算口径（选填）'
+  },
+  freight: {
+    name: '填写货源业务核心指标名称',
+    value: '填写该指标的本月数据',
+    note: '数据来源或计算口径（选填）'
+  },
+  rescue: {
+    name: '填写救援业务核心指标名称',
+    value: '填写该指标的本月数据',
+    note: '数据来源或计算口径（选填）'
+  },
+  tech: {
+    name: '填写你在业务侧做的支持/帮助事项',
+    value: '用数据或体验改善效果体现（如响应提速X%、故障率下降X%）',
+    note: '涉及的业务线和改进背景（选填）'
+  },
+  ops: {
+    name: '填写运营业务核心指标名称',
+    value: '填写该指标的本月数据',
+    note: '数据来源或计算口径（选填）'
+  }
+};
+
+// ========== INIT ==========
+function initStepBar() {
+  const bar = document.getElementById('stepBar');
+  bar.innerHTML = '';
+  for (let i = 1; i <= 7; i++) {
+    const d = document.createElement('div');
+    d.className = 'step-dot' + (i < state.currentPage ? ' done' : (i === state.currentPage ? ' active' : ''));
+    d.style.flex = '1';
+    bar.appendChild(d);
+  }
+  document.getElementById('stepLabel').textContent = Math.min(state.currentPage, 7) + ' / 7';
+}
+initStepBar();
+
+// ========== ROLE SELECT ==========
+function selectRole(el) {
+  document.querySelectorAll('.id-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+  state.role = el.dataset.role;
+  checkP1Ready();
+}
+
+document.getElementById('userName').addEventListener('input', function() {
+  state.userName = this.value.trim();
+  checkP1Ready();
+});
+
+function checkP1Ready() {
+  // 仅控制视觉样式，不再设 disabled，校验统一由 goTo(2) 的 toast 处理
+  const btn = document.getElementById('p1Next');
+  if (state.role && state.userName) {
+    btn.classList.add('ready');
+  } else {
+    btn.classList.remove('ready');
+  }
+}
+
+// ========== TOAST ==========
+function showToast(title, items, icon) {
+  icon = icon || '⚠️';
+  const listItems = Array.isArray(items) ? items.map(i => '<li>· ' + i + '</li>').join('') : '<li>' + items + '</li>';
+  const overlay = document.createElement('div');
+  overlay.className = 'toast-overlay';
+  overlay.innerHTML = `
+    <div class="toast-box">
+      <div class="toast-icon">${icon}</div>
+      <div class="toast-title">${title}</div>
+      <div class="toast-msg">${listItems}</div>
+      <button class="toast-btn" onclick="this.closest('.toast-overlay').remove()">知道了</button>
+    </div>`;
+  overlay.addEventListener('click', function(e) {
+    if (e.target === overlay) overlay.remove();
+  });
+  document.body.appendChild(overlay);
+}
+
+// ========== PAGE NAV ==========
+function goTo(n) {
+  // P1→P2: 岗位 + 姓名必填
+  if (n === 2) {
+    const issues = [];
+    if (!state.role) issues.push('请选择一个岗位（会员/商业/货源/救援/技术/运营）');
+    if (!state.userName) issues.push('请输入你的姓名');
+    if (issues.length > 0) { showToast('岗位和姓名未完善', issues); return; }
+  }
+  // P2→P3: 至少3项指标有数据
+  if (n === 3) {
+    const rows = document.querySelectorAll('#metricFields .metric-input-row');
+    const filled = Array.from(rows).filter(r => {
+      const inputs = r.querySelectorAll('input');
+      return inputs[0].value.trim() && inputs[1].value.trim();
+    });
+    if (filled.length < 3) {
+      showToast('指标信息不足', ['至少填写 3 项关键指标（名称 + 数值）', '当前已填写 ' + filled.length + ' 项']);
+      return;
+    }
+  }
+  // P3→P4: 主动推进选"有"时需填问题+动作+结果描述
+  if (n === 4) {
+    const yesBtn = document.querySelector('#proactiveSwitch .switch-btn[data-proactive="yes"]');
+    const isYes = yesBtn && yesBtn.classList.contains('active');
+    if (isYes) {
+      const issues = [];
+      const problem = (document.getElementById('problem').value || '').trim();
+      const actionChecks = document.querySelectorAll('#actionGrid .check-item.checked');
+      const resultChecks = document.querySelectorAll('#resultGrid .check-item.checked');
+      const actionNote = (document.getElementById('actionNote').value || '').trim();
+      const resultNote = (document.getElementById('resultNote').value || '').trim();
+      if (!problem) issues.push('请填写"发现的问题/机会"');
+      if (actionChecks.length === 0) issues.push('请至少选择 1 项推动动作');
+      if (resultChecks.length === 0) issues.push('请选择结果状态（有明确结果/过程推进中等）');
+      if (!actionNote) issues.push('请填写"推动细节和具体动作"');
+      if (!resultNote) issues.push('请填写"具体变化或结果"');
+      if (issues.length > 0) { showToast('主动推动信息不完整', issues); return; }
+    }
+  }
+  // P4→P5: 效率优化至少选1项
+  if (n === 5) {
+    const effChecks = document.querySelectorAll('#effGrid .check-item.checked');
+    const timeSaved = parseFloat(document.getElementById('timeSaved').value) || 0;
+    if (effChecks.length === 0 && timeSaved === 0) {
+      showToast('效率信息不完整', ['请至少选择 1 项效率提升方式，或填写节省时间']);
+      return;
+    }
+  }
+  // P5→P6: 至少1位协同对象有姓名
+  if (n === 6) {
+    let hasCollab = false;
+    for (let i = 1; i <= 3; i++) {
+      const card = document.getElementById('collabCard' + i);
+      if (!card) continue;
+      const nameEl = card.querySelector('.collab-name');
+      if (nameEl && nameEl.value.trim()) { hasCollab = true; break; }
+    }
+    if (!hasCollab) {
+      showToast('协同信息不完整', ['请至少填写 1 位协同对象的姓名']);
+      return;
+    }
+  }
+  // P6→P7: 自动通过（能力画像已生成）
+  // P6: 进入能力画像页时自动生成画像
+  if (n === 6) { generateAbilityProfile(); }
+  document.getElementById('page' + state.currentPage).classList.remove('active');
+  state.currentPage = n;
+  document.getElementById('page' + n).classList.add('active');
+  initStepBar();
+  window.scrollTo(0, 0);
+  if (n === 2) renderMetrics();
+}
+
+// ========== P2 METRICS (SELF-INPUT) ==========
+function renderMetrics() {
+  const container = document.getElementById('metricFields');
+  state.metricCount = 3; // 固定初始3行空白
+  container.innerHTML = '';
+
+  // 按岗位动态更新指引文字
+  const subtitle = document.getElementById('p2Subtitle');
+  const tip = document.getElementById('p2Tip');
+  if (state.role === 'tech') {
+    subtitle.textContent = '请填写你在业务侧做的支持和帮助成果，用数据/体验改善效果体现';
+    tip.innerHTML = '<strong>技术填写指引：</strong>不要只填技术指标（如需求数、BUG数），请聚焦你在业务侧的实际贡献。例如：<br>· 为XX业务线解决了什么问题，带来什么数据变化<br>· 优化了什么体验，用户反馈或使用数据如何改善<br>· 做了什么工具/流程改进，效率提升了多少<br>每条需包含名称、数据效果、涉及的业务线。确保数据真实可验证。';
+  } else {
+    subtitle.textContent = '请填写本月岗位核心指标，至少填3项';
+    tip.innerHTML = '<strong>填写指引：</strong>请根据你的岗位角色，填写本月最关键的3项业务结果指标。每条指标需包含名称、数据、计算口径。确保数据真实可验证。';
+  }
+
+  for (let i = 0; i < 3; i++) {
+    addMetricRowDOM(container, i);
+  }
+}
+
+function addMetricRow() {
+  const container = document.getElementById('metricFields');
+  state.metricCount++;
+  addMetricRowDOM(container, state.metricCount - 1);
+}
+
+function addMetricRowDOM(container, idx) {
+  const placeholders = roleMetricPlaceholders[state.role] || roleMetricPlaceholders.ops;
+  const row = document.createElement('div');
+  row.className = 'metric-input-row';
+  row.id = 'mrow' + idx;
+  row.innerHTML = `
+    <input type="text" placeholder="${placeholders.name}" value="" style="max-width:120px;" />
+    <input type="text" placeholder="${placeholders.value}" style="max-width:140px;" />
+    <input type="text" placeholder="${placeholders.note}" style="flex:2;" />
+    <button class="metric-remove" onclick="removeMetricRow('mrow${idx}')">-</button>
+  `;
+  container.appendChild(row);
+}
+
+function removeMetricRow(id) {
+  const rows = document.querySelectorAll('#metricFields .metric-input-row');
+  if (rows.length <= 3) { showToast('无法删除', ['至少保留 3 项关键指标']); return; }
+  document.getElementById(id).remove();
+}
+
+// ========== CHECK / RADIO / TOGGLE ==========
+// 主动推进开关
+function toggleProactive(el) {
+  const group = document.getElementById('proactiveSwitch');
+  group.querySelectorAll('.switch-btn').forEach(b => b.classList.remove('active'));
+  el.classList.add('active');
+  const section = document.getElementById('proactiveSection');
+  if (el.dataset.proactive === 'no') {
+    section.style.display = 'none';
+  } else {
+    section.style.display = '';
+  }
+}
+
+function toggleCheck(el) {
+  el.classList.toggle('checked');
+  // "无优化" 互斥
+  if (el.dataset.val === '无优化' && el.classList.contains('checked')) {
+    document.querySelectorAll('#effGrid .check-item').forEach(c => {
+      if (c.dataset.val !== '无优化') c.classList.remove('checked');
+    });
+  } else if (el.classList.contains('checked') && el.parentElement.id === 'effGrid') {
+    const none = document.querySelector('#effGrid .check-item[data-val="无优化"]');
+    if (none) none.classList.remove('checked');
+  }
+  // "暂无" 互斥：如果选中"暂无"，取消其他业务变化选项
+  if (el.dataset.val === '暂无' && el.classList.contains('checked') && el.parentElement.id === 'resultGrid') {
+    document.querySelectorAll('#resultGrid .check-item').forEach(c => {
+      if (c.dataset.val !== '暂无') c.classList.remove('checked');
+    });
+  }
+  // 如果选中了其他选项，取消"暂无"
+  if (el.classList.contains('checked') && el.dataset.val !== '暂无' && el.parentElement.id === 'resultGrid') {
+    const none = document.querySelector('#resultGrid .check-item[data-val="暂无"]');
+    if (none) none.classList.remove('checked');
+  }
+}
+
+function selectRadio(groupId, el) {
+  // Robust: find all radio-item in the same radio-group
+  const allItems = el.parentElement.querySelectorAll('.radio-item');
+  allItems.forEach(r => r.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function selectRatingBtn(el) {
+  // Compact rating button: deselect siblings, select clicked
+  const group = el.parentElement;
+  group.querySelectorAll('.collab-rating-btn').forEach(b => b.classList.remove('selected'));
+  el.classList.add('selected');
+}
+
+function activateCollabCard(n) {
+  const card = document.getElementById('collabCard' + n);
+  if (card.style.opacity === '0.45' || card.style.opacity === '') {
+    card.style.opacity = '1';
+    card.style.cursor = 'default';
+    card.style.border = '1px solid #E0E4EE';
+    card.classList.remove('collab-inactive');
+    // 替换为完整表单
+    card.innerHTML = `
+      <div class="card-title">
+        <div class="icon" style="background:var(--brand-light);color:var(--brand);font-weight:500;">${n}</div>
+        协同对象
+      </div>
+      <div style="margin-bottom:10px;">
+        <input type="text" class="collab-name" placeholder="请输入协同对象姓名" />
+        <input type="text" class="collab-content" placeholder="协同内容" style="margin-top:8px;" />
+      </div>
+      <div class="collab-rating-row">
+        <span class="collab-rating-label">响应速度</span>
+        <div class="collab-rating-options" id="speed${n}">
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="快">快</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="中">中</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="慢">慢</div>
+        </div>
+      </div>
+      <div class="collab-rating-row">
+        <span class="collab-rating-label">协同成本</span>
+        <div class="collab-rating-options" id="cost${n}">
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="降低">降低</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="不变">不变</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="增加">增加</div>
+        </div>
+      </div>
+      <div class="collab-rating-row">
+        <span class="collab-rating-label">结果帮助</span>
+        <div class="collab-rating-options" id="help${n}">
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="强">强</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="中">中</div>
+          <div class="collab-rating-btn" onclick="selectRatingBtn(this)" data-val="弱">弱</div>
+        </div>
+      </div>
+      <div class="no-comment-flag">不允许开放评论</div>
+    `;
+  }
+}
+
+function toggleSwitch(el) {
+  el.classList.toggle('on');
+}
+
+// ========== GRADE ==========
+function selectGrade(el) {
+  document.querySelectorAll('.grade-item').forEach(g => g.classList.remove('selected'));
+  el.classList.add('selected');
+  state.selfGrade = el.dataset.grade;
+  state.selfCoeff = parseFloat(el.dataset.coeff);
+}
+
+// ========== SCORING ENGINE ==========
+function calcScore() {
+  // 1. 收入贡献 40%：根据自填指标数量和质量估算
+  const metricRows = document.querySelectorAll('#metricFields .metric-input-row');
+  const filledCount = Array.from(metricRows).filter(r => {
+    const inputs = r.querySelectorAll('input');
+    return inputs[0].value.trim() && inputs[1].value.trim();
+  }).length;
+  let income = 30 + filledCount * 8;
+  income = Math.min(100, Math.max(30, income));
+
+  // 2. 成本优化 20%
+  const effMethods = document.querySelectorAll('#effGrid .check-item.checked');
+  const timeSaved = parseFloat(document.getElementById('timeSaved').value) || 0;
+  const reuse = document.getElementById('reuseToggle').classList.contains('on');
+  let cost = 30;
+  cost += effMethods.length * 8;
+  cost += Math.min(timeSaved, 20) * 0.8;
+  if (reuse) cost += 10;
+  cost = Math.min(100, cost);
+
+  // 3. 效率提升 20%
+  const p3Actions = document.querySelectorAll('#actionGrid .check-item.checked');
+  const resultChecks = document.querySelectorAll('#resultGrid .check-item.checked');
+  const resultVals = Array.from(resultChecks).map(c => c.dataset.val);
+  let efficiency = 30;
+  efficiency += p3Actions.length * 6;
+  if (resultVals.includes('有明确结果')) efficiency += 20;
+  if (resultVals.includes('过程推进中')) efficiency += 10;
+  if (resultVals.includes('推动但未落地')) efficiency += 4;
+  // "暂无"不加分
+  efficiency = Math.min(100, efficiency);
+
+  // 4. 协同贡献 20%（来自P5协同模块）
+  let collabScore = 30;
+  for (let i = 1; i <= 3; i++) {
+    const nameEl = document.querySelector('#collabCard' + i + ' .collab-name');
+    if (!nameEl) continue; // 卡片未激活，跳过
+    const name = nameEl.value.trim();
+    if (!name) continue;
+    const speed = getSelectedValById('speed' + i);
+    const costVal = getSelectedValById('cost' + i);
+    const helpVal = getSelectedValById('help' + i);
+    let points = 5;
+    if (speed === '快') points += 3; else if (speed === '慢') points += 0; else points += 1;
+    if (costVal === '降低') points += 3; else if (costVal === '增加') points += 0; else points += 1;
+    if (helpVal === '强') points += 4; else if (helpVal === '弱') points += 0; else points += 2;
+    collabScore += points;
+  }
+  collabScore = Math.min(100, collabScore);
+
+  // 主动性系数
+  let proactiveCoeff = 0.8;
+  // 如果选择了"无主动推进"，直接=0.8，不参与P3计算
+  const noProactiveEl = document.querySelector('#proactiveSwitch .switch-btn[data-proactive="no"]');
+  const isNoProactive = noProactiveEl && noProactiveEl.classList.contains('active');
+  if (!isNoProactive) {
+    const actionCount = p3Actions.length;
+    const problemText = (document.getElementById('problem').value || '').trim();
+    const hasClearResult = resultVals.includes('有明确结果');
+    const hasInProgress = resultVals.includes('过程推进中');
+    if (problemText && actionCount >= 2 && hasClearResult) proactiveCoeff = 1.3;
+    else if (problemText && actionCount >= 1 && (hasClearResult || hasInProgress)) proactiveCoeff = 1.2;
+    else if (actionCount >= 1) proactiveCoeff = 1.0;
+  }
+
+  // 自评干预
+  const selfCoeff = state.selfCoeff;
+  const blendCoeff = (proactiveCoeff * 0.7) + (selfCoeff * 0.3);
+
+  // 加权总分
+  const raw = income * 0.4 + cost * 0.2 + efficiency * 0.2 + collabScore * 0.2;
+  const total = Math.round(raw * blendCoeff);
+
+  return {
+    total: Math.min(100, total),
+    income: Math.round(income),
+    cost: Math.round(cost),
+    efficiency: Math.round(efficiency),
+    collab: Math.round(collabScore),
+    proactiveCoeff: proactiveCoeff.toFixed(1),
+    blendCoeff: blendCoeff.toFixed(2)
+  };
+}
+
+function getSelectedValById(groupId) {
+  const el = document.getElementById(groupId)?.querySelector('.collab-rating-btn.selected');
+  return el ? el.dataset.val : null;
+}
+
+function getGrade(score) {
+  if (score >= 90) return { grade: 'S', color: '#B07800', bg: '#FFF0D6', label: '业务驱动者' };
+  if (score >= 78) return { grade: 'A', color: '#2D9B6A', bg: '#E4F5EC', label: '主动贡献者' };
+  if (score >= 65) return { grade: 'B', color: '#1A6FF0', bg: '#E8F0FD', label: '稳定执行' };
+  if (score >= 50) return { grade: 'C', color: '#777', bg: '#F5F5F5', label: '被动响应' };
+  return { grade: 'D', color: '#D64040', bg: '#FBEAEA', label: '低贡献' };
+}
+
+function getPosition(score, income, collab) {
+  if (income >= 80 && collab >= 60) return {
+    badge: '增长驱动型', title: '业务增长核心驱动者',
+    desc: '业务贡献直接体现在收入与用户增长上，协同能力强，是团队业务推进的关键引擎。'
+  };
+  if (collab >= 70) return {
+    badge: '协同联动型', title: '组织协同的连接器',
+    desc: '善于跨部门协作，通过协同带动业务推进，贡献体现在组织效率提升。'
+  };
+  if (score >= 65) return {
+    badge: '执行稳定型', title: '稳定可靠的执行者',
+    desc: '本月业务执行质量稳定，任务完成度高，是团队运转的可靠支撑，建议提升主动性。'
+  };
+  return {
+    badge: '低贡献型', title: '需要复盘提升',
+    desc: '本月业务贡献低于预期，建议与上级对齐目标，找到阻力所在，制定改进计划。'
+  };
+}
+
+function getAISuggest(score, proactiveCoeff, grade, collab) {
+  const role = state.role;
+  const roleMap = { member: '会员运营', commerce: '商业拓展', freight: '货源运营', rescue: '救援服务', tech: '技术交付', ops: '运营支持' };
+  const roleLabel = roleMap[role] || '运营支持';
+  if (grade.grade === 'S') return `在${roleLabel}领域本月业务贡献突出，主动性系数达到 ${proactiveCoeff}，业务结果扎实。建议将本月成功路径沉淀为方法论，在团队内部复用，形成可扩展的增长飞轮。`;
+  if (grade.grade === 'A') return `本月在${roleLabel}方向主动推动了业务改变，有正向贡献影响。建议在问题发现能力上进一步强化——从"解决问题"升级到"预判问题"，提前介入，成长空间更大。`;
+  if (collab < 50 && grade.grade === 'B') return `本月执行稳定，协同是当前明显的成长杠杆。建议下月主动提升跨部门沟通频率，哪怕只增加1-2次深度协同，也能带来新的业务突破。`;
+  if (grade.grade === 'B') return `本月执行稳定，但主动性系数仅 ${proactiveCoeff}。建议在下月主动发起 1-2 个业务改进提案——从小处着手，每一次主动推动都是成长的证据。`;
+  if (grade.grade === 'C') return `本月以被动执行为主，在${roleLabel}方向有成长空间。建议梳理本月工作中遇到的最大阻力，下月带着"发现问题 + 推动解决"的思路去行动。`;
+  return `本月${roleLabel}方向业务贡献有较大提升空间。建议和直属上级对齐本月的卡点，制定下月清晰的改进方向。每个月的评估都是新的起点。`;
+}
+
+// ========== SUBMIT ==========
+function handleSubmit() {
+  if (!state.selfGrade) { showToast('请选择业务贡献等级', ['请选择 S / A / B / C / D 中的一个等级后再提交']); return; }
+  console.log('提交触发，selfGrade=', state.selfGrade);
+  submitForm();
+}
+
+function submitForm() {
+  try {
+  // 判断是否选择了"无主动推进"
+  const noProactiveEl = document.querySelector('#proactiveSwitch .switch-btn[data-proactive="no"]');
+  const isNoProactive = noProactiveEl && noProactiveEl.classList.contains('active');
+
+  // 必填校验：P3推动细节和结果描述（仅"有主动推进"时校验）
+  if (!isNoProactive) {
+    const actionNote = (document.getElementById('actionNote').value || '').trim();
+    const resultNote = (document.getElementById('resultNote').value || '').trim();
+    if (!actionNote) { showToast('信息不完整', ['请填写"推动细节和具体动作"']); document.getElementById('actionNote').focus(); return; }
+    if (!resultNote) { showToast('信息不完整', ['请填写"具体变化或结果"']); document.getElementById('resultNote').focus(); return; }
+  }
+  
+  const scores = calcScore();
+  console.log('scores:', JSON.stringify(scores));
+  const grade = getGrade(scores.total);
+  const position = getPosition(scores.total, scores.income, scores.collab);
+  const aiSuggest = getAISuggest(scores.total, scores.proactiveCoeff, grade, scores.collab);
+
+  // Go to result page
+  document.getElementById('page' + state.currentPage).classList.remove('active');
+  state.currentPage = 8;
+  document.getElementById('page8').classList.add('active');
+  window.scrollTo(0, 0);
+
+  // Fill result
+  document.getElementById('resultName').textContent = (state.userName || '你') + ' · 5月价值报告';
+  // 区间展示：±3分模糊化
+  const scoreLow = Math.max(0, scores.total - 3);
+  const scoreHigh = Math.min(100, scores.total + 3);
+  document.getElementById('resultScore').textContent = scoreLow + ' - ' + scoreHigh;
+  document.getElementById('resultScoreRange').textContent = '估值区间';
+  const gb = document.getElementById('resultGradeBadge');
+  gb.textContent = grade.grade + ' · ' + grade.label;
+  gb.style.background = grade.bg;
+  gb.style.color = grade.color;
+
+  // Score dim grid
+  const dimGrid = document.getElementById('scoreDimGrid');
+  const dims = [
+    { label: '收入贡献', val: scores.income, weight: '40%', color: '#378ADD' },
+    { label: '成本优化', val: scores.cost, weight: '20%', color: '#2D9B6A' },
+    { label: '效率提升', val: scores.efficiency, weight: '20%', color: '#C97A12' },
+    { label: '协同贡献', val: scores.collab, weight: '20%', color: '#7F77DD' }
+  ];
+  dimGrid.innerHTML = dims.map(d => `
+    <div class="score-box">
+      <div class="s-label">${d.label}</div>
+      <div class="s-val" style="color:${d.color}">${d.val}</div>
+      <div class="s-sub">权重 ${d.weight}</div>
+    </div>`).join('');
+
+  // Position
+  document.getElementById('positionBadge').textContent = position.badge;
+  document.getElementById('positionTitle').textContent = position.title;
+  document.getElementById('positionDesc').textContent = position.desc;
+
+  // AI suggest
+  document.getElementById('aiSuggest').textContent = aiSuggest;
+
+  // Bars
+  setTimeout(() => {
+    document.getElementById('proactiveBar').style.width = (parseFloat(scores.proactiveCoeff) / 1.5 * 100) + '%';
+    document.getElementById('proactiveVal').textContent = '\u00d7' + scores.proactiveCoeff;
+    [scores.income, scores.cost, scores.efficiency, scores.collab].forEach((v, i) => {
+      document.getElementById('bar' + (i + 1)).style.width = v + '%';
+      document.getElementById('barVal' + (i + 1)).textContent = v;
+    });
+  }, 100);
+
+  // Radar chart
+  setTimeout(() => {
+    if (typeof Chart !== 'undefined') {
+      renderRadar(scores);
+    } else {
+      console.warn('Chart.js 未加载，跳过雷达图渲染');
+    }
+  }, 200);
+
+  // Update step bar
+  document.getElementById('stepLabel').textContent = '完成';
+  const bar = document.getElementById('stepBar');
+  bar.innerHTML = '';
+  for (let i = 0; i < 7; i++) {
+    const d = document.createElement('div');
+    d.className = 'step-dot done';
+    d.style.flex = '1';
+    bar.appendChild(d);
+  }
+
+  // 收集原始填报数据
+  const rawData = {};
+  // P2 指标
+  const mRows = document.querySelectorAll('#metricFields .metric-input-row');
+  rawData.metrics = Array.from(mRows).map(r => {
+    const inputs = r.querySelectorAll('input');
+    return { name: inputs[0].value.trim(), value: inputs[1].value.trim(), note: (inputs[2]?.value || '').trim() };
+  }).filter(m => m.name || m.value);
+  // P3 主动推进
+  rawData.problem = (document.getElementById('problem')?.value || '').trim();
+  rawData.actions = Array.from(document.querySelectorAll('#actionGrid .check-item.checked')).map(c => c.dataset.val).join('、');
+  rawData.results = Array.from(document.querySelectorAll('#resultGrid .check-item.checked')).map(c => c.dataset.val).join('、');
+  rawData.actionNote = (document.getElementById('actionNote')?.value || '').trim();
+  rawData.resultNote = (document.getElementById('resultNote')?.value || '').trim();
+  rawData.isNoProactive = isNoProactive;
+  // P4 效率
+  rawData.effMethods = Array.from(document.querySelectorAll('#effGrid .check-item.checked')).map(c => c.dataset.val).join('、');
+  rawData.timeSaved = (document.getElementById('timeSaved')?.value || '').trim();
+  rawData.reuse = document.getElementById('reuseToggle')?.classList.contains('on') ? '是' : '否';
+  // P5 协同
+  rawData.collabs = [];
+  for (let i = 1; i <= 3; i++) {
+    const nameEl = document.querySelector('#collabCard' + i + ' .collab-name');
+    if (!nameEl) continue;
+    const name = nameEl.value.trim();
+    if (!name) continue;
+    const content = document.querySelector('#collabCard' + i + ' .collab-content')?.value?.trim() || '';
+    const speed = getSelectedValById('speed' + i) || '';
+    const costV = getSelectedValById('cost' + i) || '';
+    const helpV = getSelectedValById('help' + i) || '';
+    rawData.collabs.push({ name, content, speed, cost: costV, help: helpV });
+  }
+
+  // CSV 生成 + 下载
+  window._lastCSVData = { scores, grade, position, scoreLow, scoreHigh, rawData };
+  downloadCSV();
+
+  // 显示提示
+  document.getElementById('csvExportTip').style.display = 'block';
+  } catch(e) { console.error('submitForm error:', e); showToast('提交失败', ['系统异常: ' + e.message, '请刷新页面后重试'], '❌'); }
+}
+
+// ========== CSV 下载 ==========
+function downloadCSV() {
+  const d = window._lastCSVData;
+  if (!d) return;
+  const { scores, grade, position, scoreLow, scoreHigh, rawData } = d;
+  const now = new Date();
+  const dateStr = now.getFullYear() + '-' + String(now.getMonth()+1).padStart(2,'0') + '-' + String(now.getDate()).padStart(2,'0');
+  const timeStr = String(now.getHours()).padStart(2,'0') + ':' + String(now.getMinutes()).padStart(2,'0');
+
+  // BOM for Excel UTF-8
+  let csv = '\uFEFF';
+  csv += '姓名,岗位,总分区间,等级,组织定位,收入贡献,成本优化,效率提升,协同贡献,主动性系数,混合系数,自评等级,思考与判断力,业务理解力,执行闭环力,跨部门协同力,资源调动能力,自驱与主动性,能力画像反馈,反馈说明';
+  // 原始填报数据列头
+  csv += ',是否主动推进,发现问题/机会,推动动作,结果状态,推动细节,具体变化';
+  csv += ',效率方式,节省时间(小时),可复用';
+  csv += ',P2指标明细';
+  csv += ',协同对象1姓名,协同对象1内容,协同对象1响应速度,协同对象1协同成本,协同对象1结果帮助';
+  csv += ',协同对象2姓名,协同对象2内容,协同对象2响应速度,协同对象2协同成本,协同对象2结果帮助';
+  csv += ',协同对象3姓名,协同对象3内容,协同对象3响应速度,协同对象3协同成本,协同对象3结果帮助';
+  csv += ',提交日期,提交时间\n';
+
+  const ability = state.abilityProfile;
+  const abLevels = ability ? ability.dimensions.map(d => d.level) : ['','','','','',''];
+  const feedbackStatus = state.abilityFeedbackAccepted ? '认可' : (state.abilityFeedbackNote ? '不准确' : '未反馈');
+
+  // 原始数据文本化
+  const rd = rawData || {};
+  const metricsStr = (rd.metrics || []).map(m => m.name + '=' + m.value + (m.note ? '(' + m.note + ')' : '')).join('; ');
+  const collabs = rd.collabs || [];
+  const c1 = collabs[0] || {};
+  const c2 = collabs[1] || {};
+  const c3 = collabs[2] || {};
+
+  csv += [
+    state.userName || '',
+    getRoleLabel(state.role),
+    scoreLow + '-' + scoreHigh,
+    grade.grade + '·' + grade.label,
+    position.title,
+    scores.income,
+    scores.cost,
+    scores.efficiency,
+    scores.collab,
+    scores.proactiveCoeff,
+    scores.blendCoeff,
+    state.selfGrade,
+    abLevels[0], abLevels[1], abLevels[2], abLevels[3], abLevels[4], abLevels[5],
+    feedbackStatus,
+    state.abilityFeedbackNote || '',
+    // 原始数据
+    rd.isNoProactive ? '否' : '是',
+    rd.problem || '',
+    rd.actions || '',
+    rd.results || '',
+    rd.actionNote || '',
+    rd.resultNote || '',
+    rd.effMethods || '',
+    rd.timeSaved || '',
+    rd.reuse || '否',
+    metricsStr,
+    c1.name || '', c1.content || '', c1.speed || '', c1.cost || '', c1.help || '',
+    c2.name || '', c2.content || '', c2.speed || '', c2.cost || '', c2.help || '',
+    c3.name || '', c3.content || '', c3.speed || '', c3.cost || '', c3.help || '',
+    dateStr,
+    timeStr
+  ].join(',') + '\n';
+
+  const filename = (state.userName || '未填姓名') + '_' + getRoleLabel(state.role) + '_5月评估.csv';
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const url = URL.createObjectURL(blob);
+
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = filename;
+  document.body.appendChild(a);
+  a.click();
+  document.body.removeChild(a);
+  URL.revokeObjectURL(url);
+
+  // 显示重新下载按钮
+  const reBtn = document.getElementById('reDownloadBtn');
+  if (reBtn) reBtn.style.display = 'inline-block';
+}
+
+function getRoleLabel(role) {
+  const map = { 'member':'会员','biz':'商业','cargo':'货源','rescue':'救援','tech':'技术','ops':'运营' };
+  return map[role] || role;
+}
+
+// ========== RADAR ==========
+let radarInstance = null;
+function renderRadar(scores) {
+  if (typeof Chart === 'undefined') { console.warn('Chart.js 未加载，跳过雷达图'); return; }
+  if (radarInstance) { radarInstance.destroy(); radarInstance = null; }
+  const ctx = document.getElementById('radarChart').getContext('2d');
+  radarInstance = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: ['收入贡献', '成本优化', '效率提升', '协同贡献'],
+      datasets: [{
+        label: '价值评分',
+        data: [scores.income, scores.cost, scores.efficiency, scores.collab],
+        backgroundColor: 'rgba(26, 111, 240, 0.12)',
+        borderColor: '#1A6FF0',
+        borderWidth: 2,
+        pointBackgroundColor: '#1A6FF0',
+        pointRadius: 4
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          min: 0,
+          max: 100,
+          ticks: { stepSize: 25, font: { size: 11 }, color: '#888' },
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          pointLabels: { font: { size: 12 }, color: '#444' },
+          angleLines: { color: 'rgba(0,0,0,0.08)' }
+        }
+      }
+    }
+  });
+}
+
+function restartForm() {
+  state.currentPage = 1;
+  state.role = '';
+  state.userName = '';
+  state.selfGrade = '';
+  state.selfCoeff = 1.0;
+  state.abilityProfile = null;
+  state.abilityFeedbackAccepted = false;
+  state.abilityFeedbackNote = '';
+  document.querySelectorAll('.id-btn').forEach(b => b.classList.remove('selected'));
+  document.getElementById('userName').value = '';
+  document.getElementById('p1Next').disabled = true;
+  document.getElementById('page8').classList.remove('active');
+  document.getElementById('page1').classList.add('active');
+  initStepBar();
+  window.scrollTo(0, 0);
+}
+
+// ========== ABILITY PROFILE (P6) ==========
+let abilityRadarInstance = null;
+
+function generateAbilityProfile() {
+  // P2: Business metrics
+  const metricRows = document.querySelectorAll('#metricFields .metric-input-row');
+  const filledMetrics = Array.from(metricRows).filter(r => {
+    const inputs = r.querySelectorAll('input');
+    return inputs[0] && inputs[0].value.trim() && inputs[1] && inputs[1].value.trim();
+  });
+  const filledCount = filledMetrics.length;
+  const hasSpecificValues = Array.from(filledMetrics).some(r => {
+    const inputs = r.querySelectorAll('input');
+    const val = inputs[1].value.trim();
+    return /[\d%+\-.]/.test(val);
+  });
+
+  // P3: Proactive value
+  const proactiveEl = document.querySelector('#proactiveSwitch .switch-btn[data-proactive="yes"]');
+  const isProactive = proactiveEl && proactiveEl.classList.contains('active');
+  const problemText = (document.getElementById('problem') ? (document.getElementById('problem').value || '') : '').trim();
+  const actionChecks = document.querySelectorAll('#actionGrid .check-item.checked');
+  const actionVals = Array.from(actionChecks).map(c => c.dataset.val);
+  const resultChecks = document.querySelectorAll('#resultGrid .check-item.checked');
+  const resultVals = Array.from(resultChecks).map(c => c.dataset.val);
+
+  // P4: Efficiency/AI
+  const effChecks = document.querySelectorAll('#effGrid .check-item.checked');
+  const effVals = Array.from(effChecks).map(c => c.dataset.val);
+  const hasNoneOptimization = effVals.includes('无优化') || effVals.includes('本月无优化行为');
+
+  // P5: Collaboration
+  let collabCount = 0;
+  for (let i = 1; i <= 3; i++) {
+    const nameEl = document.querySelector('#collabCard' + i + ' .collab-name');
+    if (nameEl && nameEl.value.trim()) collabCount++;
+  }
+
+  // DIMENSION 1: 思考与判断力
+  let thinkingLevel, thinkingEvidence;
+  if (problemText) {
+    thinkingLevel = '强';
+    thinkingEvidence = '本月主动识别了业务问题：' + (problemText.length > 40 ? problemText.substring(0, 40) + '...' : problemText);
+  } else if (!hasNoneOptimization && effVals.some(v => v.includes('AI'))) {
+    thinkingLevel = '中';
+    thinkingEvidence = '本月使用了AI工具辅助工作，有一定的工具思维';
+  } else {
+    thinkingLevel = '弱';
+    thinkingEvidence = '本月以执行为主，较少主动发现问题或使用工具优化';
+  }
+
+  // DIMENSION 2: 业务理解力
+  let bizLevel, bizEvidence;
+  if (filledCount >= 3 && hasSpecificValues) {
+    bizLevel = '强';
+    bizEvidence = '本月填写了' + filledCount + '项关键业务指标，且数据具体明确';
+  } else if (filledCount >= 2) {
+    bizLevel = '中';
+    bizEvidence = '本月填写了' + filledCount + '项业务指标，数据维度可进一步丰富';
+  } else {
+    bizLevel = '弱';
+    bizEvidence = '本月业务指标填写较少，建议加强对核心指标的关注';
+  }
+
+  // DIMENSION 3: 执行闭环力
+  let execLevel, execEvidence;
+  const hasClearResult = resultVals.includes('有明确结果');
+  const hasInProgress = resultVals.includes('过程推进中');
+  const hasEfficiencyMethods = !hasNoneOptimization && effVals.length > 0;
+
+  if (hasClearResult && hasEfficiencyMethods) {
+    execLevel = '强';
+    execEvidence = '本月有明确业务结果，并采用了提效方法，形成完整闭环';
+  } else if (hasClearResult || (hasInProgress && filledCount >= 3)) {
+    execLevel = '中';
+    execEvidence = hasClearResult ? '本月有明确业务结果' : '本月有推进中的业务事项，结果待验证';
+  } else {
+    execLevel = '弱';
+    execEvidence = '本月业务结果不明确，建议加强执行闭环意识';
+  }
+
+  // DIMENSION 4: 跨部门协同力
+  let collabLevel, collabEvidence;
+  const hasPushCrossDept = actionVals.includes('推跨部门');
+  if (collabCount >= 2 && hasPushCrossDept) {
+    collabLevel = '强';
+    collabEvidence = '本月与' + collabCount + '位伙伴深度协同，并主动推动跨部门合作';
+  } else if (collabCount >= 1 || hasPushCrossDept) {
+    collabLevel = '中';
+    collabEvidence = collabCount >= 1 ? '本月有' + collabCount + '位协同伙伴' : '本月有跨部门推动行为，协同深度可加强';
+  } else {
+    collabLevel = '弱';
+    collabEvidence = '本月缺少跨部门协同记录，建议主动链接更多伙伴';
+  }
+
+  // DIMENSION 5: 资源调动能力
+  let resourceLevel, resourceEvidence;
+  const hasProposal = actionVals.includes('提方案');
+  const hasChangeProcess = actionVals.includes('改流程');
+  const hasAutoProcess = effVals.includes('自动化流程');
+
+  if ((hasProposal || hasChangeProcess) && hasAutoProcess) {
+    resourceLevel = '强';
+    resourceEvidence = '本月主动提出方案/改流程，并推动自动化，展现了资源调动能力';
+  } else if (hasProposal || hasChangeProcess || hasAutoProcess) {
+    resourceLevel = '中';
+    resourceEvidence = '本月有方案推动或流程优化行为，资源调动意识良好';
+  } else {
+    resourceLevel = '弱';
+    resourceEvidence = '本月以执行既定任务为主，较少调动额外资源';
+  }
+
+  // DIMENSION 6: 自驱与主动性
+  let driveLevel, driveEvidence;
+  if (isProactive && problemText && actionVals.length >= 2) {
+    driveLevel = '强';
+    driveEvidence = '本月主动发现问题并提出' + actionVals.length + '项推动动作，自驱力突出';
+  } else if (isProactive && (problemText || actionVals.length >= 1)) {
+    driveLevel = '中';
+    driveEvidence = '本月有主动推动行为，自驱意识良好';
+  } else {
+    driveLevel = '弱';
+    driveEvidence = '本月以被动执行为主，建议下月主动发起业务改进';
+  }
+
+  // Build profile
+  const dimensions = [
+    { name: '思考与判断力', level: thinkingLevel, evidence: thinkingEvidence },
+    { name: '业务理解力', level: bizLevel, evidence: bizEvidence },
+    { name: '执行闭环力', level: execLevel, evidence: execEvidence },
+    { name: '跨部门协同力', level: collabLevel, evidence: collabEvidence },
+    { name: '资源调动能力', level: resourceLevel, evidence: resourceEvidence },
+    { name: '自驱与主动性', level: driveLevel, evidence: driveEvidence }
+  ];
+
+  // Detect weaknesses
+  const levelScore = { '强': 3, '中': 2, '弱': 1 };
+  const minScore = Math.min(...dimensions.map(d => levelScore[d.level]));
+  const weaknesses = dimensions.filter(d => levelScore[d.level] === minScore);
+
+  const weaknessNames = weaknesses.map(d => d.name).join('、');
+  const weaknessConsequence = {
+    '思考与判断力': '可能导致只执行不思考，影响问题预判和方案质量',
+    '业务理解力': '可能导致指标不清晰，难以衡量自身价值贡献',
+    '执行闭环力': '可能导致事情做了但没结果，价值无法被看见',
+    '跨部门协同力': '可能导致信息孤岛，无法撬动更大资源推动业务',
+    '资源调动能力': '可能导致个人单打独斗，无法规模化推动改变',
+    '自驱与主动性': '可能导致被动等待，成长速度慢于主动者'
+  };
+  const weaknessText = '你当前最影响业务结果的能力短板是：' + weaknessNames + ' → ' +
+    weaknesses.map(w => weaknessConsequence[w.name] || '影响业务推进效率').join('；');
+
+  // Growth suggestions
+  const suggestions = [];
+  weaknesses.forEach(w => {
+    switch(w.name) {
+      case '思考与判断力':
+        suggestions.push('每月主动提出1-2个业务问题，训练发现问题本质的能力');
+        suggestions.push('使用AI工具辅助数据分析，提升判断准确性');
+        break;
+      case '业务理解力':
+        suggestions.push('每周关注核心业务指标，建立数据敏感度');
+        suggestions.push('与业务负责人对齐目标，明确你的工作与业务的关联');
+        break;
+      case '执行闭环力':
+        suggestions.push('每个任务明确"目标-动作-结果"三要素，形成闭环');
+        suggestions.push('定期复盘已完成事项，提炼可复用的方法论');
+        break;
+      case '跨部门协同力':
+        suggestions.push('多参与跨部门项目，哪怕只做协同角色');
+        suggestions.push('主动了解其他部门的工作内容和痛点');
+        break;
+      case '资源调动能力':
+        suggestions.push('主动提出业务优化方案，争取上级支持');
+        suggestions.push('学习使用自动化工具，用技术撬动更大资源');
+        break;
+      case '自驱与主动性':
+        suggestions.push('下月主动发起1个业务改进提案，从小处着手');
+        suggestions.push('培养"发现问题即推动"的习惯，不等任务分配');
+        break;
+    }
+  });
+
+  // Store in state
+  state.abilityProfile = { dimensions, weaknessText, suggestions, weaknesses };
+
+  // Render
+  renderAbilityRadar(dimensions);
+  renderAbilityCards(dimensions);
+  renderWeaknessAlert(weaknessText);
+  renderGrowthSuggestions(suggestions);
+
+  // Reset feedback UI
+  document.getElementById('feedbackNoteBox').style.display = 'none';
+  document.getElementById('feedbackConfirmed').style.display = 'none';
+  document.getElementById('btnAccept').style.display = '';
+  document.getElementById('btnDisagree').style.display = '';
+  state.abilityFeedbackAccepted = false;
+  state.abilityFeedbackNote = '';
+}
+
+function renderAbilityRadar(dimensions) {
+  if (typeof Chart === 'undefined') { console.warn('Chart.js 未加载，跳过能力雷达图'); return; }
+  if (abilityRadarInstance) { abilityRadarInstance.destroy(); abilityRadarInstance = null; }
+  const levelScore = { '强': 85, '中': 55, '弱': 25 };
+  const ctx = document.getElementById('abilityRadarChart').getContext('2d');
+  abilityRadarInstance = new Chart(ctx, {
+    type: 'radar',
+    data: {
+      labels: dimensions.map(d => d.name),
+      datasets: [{
+        label: '能力水平',
+        data: dimensions.map(d => levelScore[d.level]),
+        backgroundColor: 'rgba(26, 111, 240, 0.12)',
+        borderColor: '#1A6FF0',
+        borderWidth: 2,
+        pointBackgroundColor: dimensions.map(d => {
+          if (d.level === '强') return '#2D9B6A';
+          if (d.level === '中') return '#C97A12';
+          return '#D64040';
+        }),
+        pointRadius: 5,
+        pointBorderColor: '#fff',
+        pointBorderWidth: 1
+      }]
+    },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: { legend: { display: false } },
+      scales: {
+        r: {
+          min: 0,
+          max: 100,
+          ticks: { stepSize: 25, font: { size: 10 }, color: '#888', backdropColor: 'transparent' },
+          grid: { color: 'rgba(0,0,0,0.06)' },
+          pointLabels: { font: { size: 11 }, color: '#444' },
+          angleLines: { color: 'rgba(0,0,0,0.08)' }
+        }
+      }
+    }
+  });
+}
+
+function renderAbilityCards(dimensions) {
+  const container = document.getElementById('abilityCards');
+  const badgeClass = { '强': 'strong', '中': 'mid', '弱': 'weak' };
+  container.innerHTML = dimensions.map(d => `
+    <div class="ability-card">
+      <div class="ab-header">
+        <span class="ab-name">${d.name}</span>
+        <span class="ability-badge ${badgeClass[d.level]}">${d.level}</span>
+      </div>
+      <div class="ab-evidence">${d.evidence}</div>
+    </div>
+  `).join('');
+}
+
+function renderWeaknessAlert(weaknessText) {
+  const alertDiv = document.getElementById('weaknessAlert');
+  const textDiv = document.getElementById('weaknessText');
+  if (weaknessText) {
+    textDiv.textContent = weaknessText;
+    alertDiv.style.display = '';
+  } else {
+    alertDiv.style.display = 'none';
+  }
+}
+
+function renderGrowthSuggestions(suggestions) {
+  const container = document.getElementById('growthSuggestions');
+  container.innerHTML = `
+    <div class="suggest-card-ability">
+      <div class="suggest-title" style="font-size:14px;font-weight:500;color:var(--brand);margin-bottom:6px;">成长建议</div>
+      ${suggestions.map(s => '<div class="suggest-item">' + s + '</div>').join('')}
+    </div>
+  `;
+}
+
+function handleAbilityFeedback(accepted) {
+  if (accepted) {
+    state.abilityFeedbackAccepted = true;
+    state.abilityFeedbackNote = '';
+    document.getElementById('btnAccept').style.display = 'none';
+    document.getElementById('btnDisagree').style.display = 'none';
+    document.getElementById('feedbackConfirmed').style.display = '';
+    document.getElementById('feedbackNoteBox').style.display = 'none';
+  } else {
+    document.getElementById('feedbackNoteBox').style.display = '';
+    document.getElementById('feedbackConfirmed').style.display = 'none';
+  }
+}
+
+function submitAbilityFeedback() {
+  const note = document.getElementById('feedbackNote').value.trim();
+  if (!note) { showToast('请填写说明', ['请输入你认为不准确的原因']); return; }
+  state.abilityFeedbackAccepted = false;
+  state.abilityFeedbackNote = note;
+  document.getElementById('btnAccept').style.display = 'none';
+  document.getElementById('btnDisagree').style.display = 'none';
+  document.getElementById('feedbackNoteBox').style.display = 'none';
+  document.getElementById('feedbackConfirmed').style.display = '';
+}
+</script>
+</body>
+</html>

@@ -1,0 +1,41 @@
+- generic [ref=e1]:
+  - generic [ref=e3]:
+    - generic [ref=e4]: 货车宝 业务价值回收系统
+    - generic [ref=e5]: 1 / 7
+  - generic [ref=e14]:
+    - generic [ref=e15]:
+      - generic [ref=e16]: 05月 · 价值回收
+      - generic [ref=e17]: 本月业务价值回收
+      - generic [ref=e18]: 贡献价值 = 业务结果 + 主动推动 + 系统效率
+      - generic [ref=e19]:
+        - generic [ref=e20]:
+          - generic [ref=e21]: 👤
+          - text: 选择你的岗位
+        - generic [ref=e22]:
+          - generic [ref=e23] [cursor=pointer]:
+            - generic [ref=e24]: 🏅
+            - generic [ref=e25]: 会员
+          - generic [ref=e26] [cursor=pointer]:
+            - generic [ref=e27]: 💼
+            - generic [ref=e28]: 商业
+          - generic [ref=e29] [cursor=pointer]:
+            - generic [ref=e30]: 🚛
+            - generic [ref=e31]: 货源
+          - generic [ref=e32] [cursor=pointer]:
+            - generic [ref=e33]: 🛠
+            - generic [ref=e34]: 救援
+          - generic [ref=e35] [cursor=pointer]:
+            - generic [ref=e36]: 💻
+            - generic [ref=e37]: 技术
+          - generic [ref=e38] [cursor=pointer]:
+            - generic [ref=e39]: 📊
+            - generic [ref=e40]: 运营/其他
+      - generic [ref=e41]:
+        - generic [ref=e42]:
+          - generic [ref=e43]: ✍
+          - text: 填写你的姓名
+        - textbox "请输入姓名（用于报告显示）" [active] [ref=e44]: 张三
+      - generic [ref=e45]:
+        - strong [ref=e46]: 系统说明：
+        - text: 请按岗位填写本月核心业务指标，完整填报后系统自动计算价值等级，整个流程约 5 分钟完成。
+    - button "开始填报" [ref=e49] [cursor=pointer]
