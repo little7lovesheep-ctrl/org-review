@@ -32,7 +32,7 @@
     color: var(--gray-900);
     font-size: 14px;
     line-height: 1.6;
-    max-width: 480px;
+    max-width: 960px;
     margin: 0 auto;
     position: relative;
   }
@@ -129,7 +129,7 @@
   .step-label { font-size: 14px; color: var(--gray-500); text-align: right; }
 
   /* ===== MAIN ===== */
-  .main { padding: 20px 16px 80px; max-width: 480px; margin: 0 auto; }
+  .main { padding: 20px 16px 80px; max-width: 960px; margin: 0 auto; }
 
   /* ===== PAGE TITLE ===== */
   .page-tag {
@@ -597,14 +597,14 @@
     background: #fff;
     border-top: 0.5px solid #E0E4EE;
     padding: 12px 16px;
-    max-width: 480px;
+    max-width: 960px;
     margin: 0 auto;
     z-index: 100;
   }
   .nav-inner {
     display: flex;
     gap: 8px;
-    max-width: 448px;
+    max-width: 928px;
     margin: 0 auto;
   }
 
@@ -830,6 +830,64 @@
     align-items: center;
     justify-content: center;
     flex-shrink: 0;
+  }
+
+  /* ===== DESKTOP ADAPTATION (≥768px) ===== */
+  @media (min-width: 768px) {
+    .main { padding: 28px 24px 88px; }
+    .header { padding: 16px 24px 12px; }
+
+    /* 6列岗位选择 */
+    .identity-grid { grid-template-columns: repeat(6, 1fr); }
+
+    /* P2 指标输入：更宽 */
+    .metric-input-row { gap: 12px; }
+    .metric-input-row input { padding: 9px 12px; }
+
+    /* 表格内网格用更多列 */
+    .check-grid { grid-template-columns: repeat(4, 1fr); }
+    .score-detail { grid-template-columns: repeat(4, 1fr); }
+
+    /* P5 协同卡片：2列并排 */
+    .page5-collabs {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    /* P6 能力卡片：3列 */
+    #abilityCards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    /* P7 等级选择：水平排列 */
+    .grade-grid {
+      display: grid;
+      grid-template-columns: repeat(5, 1fr);
+      gap: 8px;
+    }
+    .grade-item { flex-direction: column; text-align: center; gap: 6px; }
+
+    /* 结果页：雷达 + 分数 并排 */
+    .result-two-col {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      align-items: start;
+    }
+    .result-two-col .card { margin-bottom: 0; }
+
+    /* margin-bottom 统一 */
+    .card { margin-bottom: 14px; }
+
+    /* 输入框更大 */
+    textarea, input[type="text"], input[type="number"] { padding: 11px 14px; }
+  }
+
+  @media (min-width: 1024px) {
+    .main { padding: 32px 40px 88px; }
   }
 </style>
 </head>
@@ -1069,6 +1127,7 @@
     <div class="page-title">本月你的协同伙伴</div>
     <div class="page-subtitle">添加Top 3协同对象并评分（不允许开放评论）</div>
 
+    <div class="page5-collabs">
     <!-- 协同对象1 -->
     <div class="card" id="collabCard1">
       <div class="card-title">
@@ -1123,6 +1182,7 @@
       </div>
       <div style="text-align:center;padding:14px 0;color:var(--gray-500);font-size:12px;">点击此处添加第三个协同对象</div>
     </div>
+    </div><!-- /page5-collabs -->
 
     <div class="tip">
       <strong>协同说明：</strong>至少填写1位协同对象并完成三维评分。仅支持结构化评分，不开放自由评论，确保评估客观公正。
@@ -1259,7 +1319,8 @@
       <div style="font-size:11px;color:var(--gray-500);margin-top:4px;">不影响绩效考核，请如实填写，关注自身成长趋势</div>
     </div>
 
-    <!-- 四维分解 -->
+    <!-- 四维分解 + 雷达图 并排 -->
+    <div class="result-two-col">
     <div class="card">
       <div class="card-title"><div class="icon">📊</div>四维评分分解</div>
       <div class="score-detail" id="scoreDimGrid"></div>
@@ -1272,6 +1333,7 @@
         <canvas id="radarChart" role="img" aria-label="业务贡献雷达图">业务贡献四维雷达图</canvas>
       </div>
     </div>
+    </div><!-- /result-two-col -->
 
     <!-- 组织定位 -->
     <div class="position-card" id="positionCard">
