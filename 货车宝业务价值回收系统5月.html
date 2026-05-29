@@ -32,6 +32,9 @@
     color: var(--gray-900);
     font-size: 14px;
     line-height: 1.6;
+    max-width: 480px;
+    margin: 0 auto;
+    position: relative;
   }
   .page { display: none; animation: fadeIn .3s ease; }
   .page.active { display: block; }
@@ -801,7 +804,6 @@
     border-radius: 6px;
   }
   .metric-input-row input {
-    flex: 1;
     border: 1px solid #E0E4EE;
     border-radius: 6px;
     padding: 7px 10px;
@@ -809,7 +811,11 @@
     font-family: inherit;
     outline: none;
     background: #fff;
+    min-width: 0;
   }
+  .metric-input-row input:nth-child(1) { flex: 2; }
+  .metric-input-row input:nth-child(2) { flex: 2.5; }
+  .metric-input-row input:nth-child(3) { flex: 3; }
   .metric-input-row input:focus { border-color: var(--brand); }
   .metric-remove {
     width: 24px;
@@ -1544,9 +1550,9 @@ function addMetricRowDOM(container, idx) {
   row.className = 'metric-input-row';
   row.id = 'mrow' + idx;
   row.innerHTML = `
-    <input type="text" placeholder="${placeholders.name}" value="" style="max-width:120px;" />
-    <input type="text" placeholder="${placeholders.value}" style="max-width:140px;" />
-    <input type="text" placeholder="${placeholders.note}" style="flex:2;" />
+    <input type="text" placeholder="${placeholders.name}" value="" />
+    <input type="text" placeholder="${placeholders.value}" />
+    <input type="text" placeholder="${placeholders.note}" />
     <button class="metric-remove" onclick="removeMetricRow('mrow${idx}')">-</button>
   `;
   container.appendChild(row);
