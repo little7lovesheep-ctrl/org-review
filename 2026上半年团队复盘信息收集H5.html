@@ -1,0 +1,874 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>2026上半年团队复盘信息收集</title>
+  <style>
+    :root {
+      --bg: #f6f5f1;
+      --panel: #ffffff;
+      --panel-2: #fdfbf6;
+      --text: #22201c;
+      --muted: #746f66;
+      --line: #ded9cf;
+      --dark: #1f2a2e;
+      --green: #2f7d63;
+      --blue: #2e6f8f;
+      --amber: #b26b1f;
+      --red: #b74b42;
+      --shadow: 0 18px 44px rgba(31, 42, 46, 0.08);
+      --radius: 8px;
+    }
+
+    * { box-sizing: border-box; }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: "Avenir Next", "PingFang SC", "Hiragino Sans GB", "Microsoft YaHei", sans-serif;
+      line-height: 1.5;
+    }
+
+    button, input, textarea, select {
+      font: inherit;
+    }
+
+    .shell {
+      min-height: 100vh;
+      display: grid;
+      grid-template-columns: 280px 1fr;
+    }
+
+    aside {
+      position: sticky;
+      top: 0;
+      height: 100vh;
+      padding: 28px 22px;
+      background: var(--dark);
+      color: #f8f4ea;
+      overflow: auto;
+    }
+
+    .brand {
+      font-size: 13px;
+      color: rgba(248, 244, 234, 0.62);
+      margin-bottom: 8px;
+    }
+
+    h1 {
+      margin: 0 0 14px;
+      font-size: 26px;
+      line-height: 1.12;
+      letter-spacing: 0;
+      font-weight: 700;
+    }
+
+    .aside-note {
+      margin: 0 0 22px;
+      color: rgba(248, 244, 234, 0.72);
+      font-size: 13px;
+    }
+
+    .step-list {
+      display: grid;
+      gap: 8px;
+      margin: 24px 0;
+    }
+
+    .step-btn {
+      width: 100%;
+      border: 1px solid rgba(248, 244, 234, 0.16);
+      background: rgba(248, 244, 234, 0.04);
+      color: rgba(248, 244, 234, 0.78);
+      padding: 11px 12px;
+      border-radius: var(--radius);
+      text-align: left;
+      cursor: pointer;
+      transition: 0.18s ease;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      min-height: 42px;
+    }
+
+    .step-btn.active {
+      background: #f8f4ea;
+      color: var(--dark);
+      border-color: #f8f4ea;
+    }
+
+    .step-btn.done::after {
+      content: "已填";
+      font-size: 12px;
+      color: var(--green);
+      white-space: nowrap;
+    }
+
+    .summary-box {
+      border-top: 1px solid rgba(248, 244, 234, 0.18);
+      padding-top: 18px;
+      display: grid;
+      gap: 10px;
+      font-size: 13px;
+      color: rgba(248, 244, 234, 0.72);
+    }
+
+    .summary-kpi {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    main {
+      padding: 32px;
+      max-width: 1160px;
+      width: 100%;
+    }
+
+    .topbar {
+      display: flex;
+      align-items: flex-start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 24px;
+    }
+
+    .eyebrow {
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    .page-title {
+      margin: 0;
+      font-size: 28px;
+      line-height: 1.16;
+      letter-spacing: 0;
+    }
+
+    .actions {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+    }
+
+    .btn {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      color: var(--text);
+      border-radius: var(--radius);
+      padding: 10px 14px;
+      cursor: pointer;
+      min-height: 40px;
+      transition: 0.16s ease;
+    }
+
+    .btn:hover { transform: translateY(-1px); box-shadow: 0 8px 18px rgba(31, 42, 46, 0.08); }
+    .btn.primary { background: var(--dark); color: #fff; border-color: var(--dark); }
+    .btn.green { background: var(--green); color: #fff; border-color: var(--green); }
+
+    .panel {
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      padding: 22px;
+      margin-bottom: 18px;
+    }
+
+    .section { display: none; }
+    .section.active { display: block; }
+
+    h2 {
+      margin: 0 0 6px;
+      font-size: 22px;
+      letter-spacing: 0;
+    }
+
+    h3 {
+      margin: 22px 0 10px;
+      font-size: 16px;
+      letter-spacing: 0;
+    }
+
+    .help {
+      color: var(--muted);
+      font-size: 13px;
+      margin: 0 0 18px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 14px;
+    }
+
+    .grid.three {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+    }
+
+    label {
+      display: block;
+      font-size: 13px;
+      color: var(--muted);
+      margin-bottom: 6px;
+    }
+
+    input, select, textarea {
+      width: 100%;
+      border: 1px solid var(--line);
+      background: var(--panel-2);
+      color: var(--text);
+      border-radius: var(--radius);
+      padding: 10px 11px;
+      outline: none;
+    }
+
+    textarea { min-height: 140px; resize: vertical; }
+    #mainResultNote { min-height: 240px; }
+    input:focus, select:focus, textarea:focus { border-color: var(--blue); background: #fff; }
+
+    .rowset {
+      display: grid;
+      gap: 10px;
+    }
+
+    .row-card {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 14px;
+      display: grid;
+      gap: 10px;
+    }
+
+    .row-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      align-items: center;
+      color: var(--muted);
+      font-size: 13px;
+    }
+
+    .footer-nav {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      margin-top: 18px;
+    }
+
+    .toast {
+      position: fixed;
+      right: 24px;
+      bottom: 24px;
+      background: var(--dark);
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      box-shadow: var(--shadow);
+      opacity: 0;
+      pointer-events: none;
+      transform: translateY(8px);
+      transition: 0.18s ease;
+      font-size: 13px;
+      max-width: 320px;
+    }
+
+    .toast.show {
+      opacity: 1;
+      transform: translateY(0);
+    }
+
+    .review-output {
+      white-space: pre-wrap;
+      background: #12191c;
+      color: #f8f4ea;
+      border-radius: var(--radius);
+      padding: 16px;
+      font-size: 13px;
+      overflow: auto;
+      max-height: 520px;
+    }
+
+    .guide-box {
+      border: 1px solid #d8e3dd;
+      background: #f2f8f5;
+      border-radius: var(--radius);
+      padding: 13px 14px;
+      margin: 14px 0 18px;
+      color: #315b4c;
+      font-size: 13px;
+    }
+
+    .guide-box strong {
+      display: block;
+      margin-bottom: 6px;
+      color: var(--green);
+    }
+
+    .guide-box ul {
+      margin: 0;
+      padding-left: 18px;
+    }
+
+    .mini-note {
+      color: var(--muted);
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .send-tip {
+      border: 1px solid #f0d0aa;
+      background: #fff7ed;
+      color: #805214;
+      border-radius: var(--radius);
+      padding: 14px;
+      margin: 14px 0;
+      font-size: 13px;
+    }
+
+    .send-tip strong {
+      display: block;
+      color: var(--amber);
+      margin-bottom: 5px;
+    }
+
+    @media (max-width: 860px) {
+      .shell { grid-template-columns: 1fr; }
+      aside { position: relative; height: auto; }
+      main { padding: 20px; }
+      .grid, .grid.three { grid-template-columns: 1fr; }
+      .topbar { flex-direction: column; }
+      .actions { justify-content: flex-start; }
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <aside>
+      <div class="brand">货车宝 · 半年度经营复盘</div>
+      <h1>2026上半年团队复盘信息收集</h1>
+      <p class="aside-note">精简填写版：每块只收关键结论、数据证据和下一步，不写流水账。</p>
+      <div class="step-list" id="stepList"></div>
+      <div class="summary-box">
+        <div class="summary-kpi"><span>当前填报人</span><strong id="sideName">未填写</strong></div>
+        <div class="summary-kpi"><span>所属业务线</span><strong id="sideLine">未选择</strong></div>
+        <div class="summary-kpi"><span>完成模块</span><strong id="sideDone">0/7</strong></div>
+      </div>
+    </aside>
+
+    <main>
+      <div class="topbar">
+        <div>
+          <div class="eyebrow">2026 H1 Review · H2 Planning</div>
+          <h2 class="page-title" id="currentTitle">基础信息</h2>
+        </div>
+        <div class="actions">
+          <button class="btn" type="button" onclick="saveDraft()">保存草稿</button>
+        </div>
+      </div>
+
+      <form id="reviewForm">
+        <section class="section active" data-title="基础信息">
+          <div class="panel">
+            <h2>基础信息</h2>
+            <p class="help">先确认身份和填报视角。业务负责人重点填业务线结果，团队成员重点填个人贡献和协同支持。</p>
+            <div class="grid">
+              <div>
+                <label for="name">姓名</label>
+                <select id="name" name="name">
+                  <option value="">请选择姓名</option>
+                  <option>祁文静</option>
+                  <option>蓝森锋</option>
+                  <option>吕彦</option>
+                  <option>卢思雨</option>
+                  <option>金新</option>
+                  <option>古尚海</option>
+                  <option>温木辉</option>
+                  <option>吴少宏</option>
+                  <option>张玲</option>
+                  <option>谭嘉如</option>
+                  <option>宗德龙</option>
+                  <option>肖锦</option>
+                  <option>吴青</option>
+                  <option>孙浩然</option>
+                  <option>邹贵兵</option>
+                  <option>救援客服团队</option>
+                  <option>其他</option>
+                </select>
+              </div>
+              <div>
+                <label for="role">填报角色</label>
+                <select id="role" name="role">
+                  <option value="">请选择</option>
+                  <option>业务线负责人</option>
+                  <option>团队成员</option>
+                  <option>跨业务支撑岗位</option>
+                  <option>管理层</option>
+                </select>
+              </div>
+              <div>
+                <label for="businessLine">所属业务线</label>
+                <select id="businessLine" name="businessLine">
+                  <option value="">请选择</option>
+                  <option>会员</option>
+                  <option>营销/商业</option>
+                  <option>救援</option>
+                  <option>货源</option>
+                  <option>技术支撑</option>
+                  <option>内容/运营</option>
+                  <option>企微/私域运营</option>
+                  <option>客服/用户反馈</option>
+                  <option>经营管理</option>
+                </select>
+              </div>
+              <div>
+                <label for="period">复盘周期</label>
+                <input id="period" name="period" value="2026上半年" />
+              </div>
+            </div>
+            <h3>上半年主要负责事项</h3>
+            <textarea id="responsibilities" name="responsibilities" placeholder="最多写3条。例：负责嘉实多项目交付；跟进会员企微触达；支撑港口货源运营数据。"></textarea>
+            <div class="guide-box">
+              <strong>填写规范</strong>
+              <ul>
+                <li>每个问题尽量按“结论 + 数据/事实 + 下一步”填写。</li>
+                <li>不要写“持续推进、加强协同、优化流程”这类空话。</li>
+                <li>不知道数据就写事实证据，比如客户确认、上线记录、回访结果。</li>
+              </ul>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" data-title="目标结果">
+          <div class="panel">
+            <h2>目标完成与核心结果</h2>
+            <p class="help">参考示例写一段核心结论即可。尽量带数字，但不用拆成很多字段。</p>
+            <div class="guide-box">
+              <strong>业务线填写示例</strong>
+              <ul>
+                <li>会员收入：目标 240 万，实际 218 万，完成率 90.8%，判断为基本达成。</li>
+                <li>营销回款：目标 150 万，实际 120 万，完成率 80%，需说明差距来自账期还是项目未执行。</li>
+                <li>港口货源付费：目标 100 单，实际 25 单，完成率 25%，判断为未达成但供给侧已验证。</li>
+              </ul>
+            </div>
+            <div class="guide-box">
+              <strong>平台支撑岗位填写示例</strong>
+              <ul>
+                <li>技术：上半年支撑会员、货源、救援、营销上线 X 个需求，其中 X 个直接服务收入或客户交付；主要差异来自需求变更/排期冲突/技术债。</li>
+                <li>数据：上半年完成 X 次数据导出/分析/监控，支撑会员分层、港口货源漏斗、救援结算等决策；差异来自数据口径不统一或字段缺失。</li>
+                <li>内容：上半年发布 C 端司机内容 X 条，有效播放 X，沉淀可用于客户/会员/救援的素材 X 条；B 端客户案例内容不足，下半年需要补客户证据类内容。</li>
+                <li>客服/私域：上半年处理客诉/回访/企微触达 X 次，沉淀用户反馈 X 条，支撑会员续费、货源反馈或救援服务稳定。</li>
+              </ul>
+            </div>
+            <div class="row-card">
+              <label for="mainResultNote">核心结果与差异原因</label>
+              <textarea id="mainResultNote" name="mainResultNote" placeholder="业务线按经营指标写；技术、数据、内容、客服/私域按平台支撑指标写。建议3句话以内：服务了哪些业务、完成了什么结果、差异/问题是什么、下半年怎么处理。"></textarea>
+              <div class="mini-note">支撑岗位不强行填收入，但要说明支撑了哪条业务线，以及产出是否改善了效率、交付、数据决策、用户反馈或客户证据。</div>
+            </div>
+          </div>
+        </section>
+
+        <section class="section" data-title="经验问题">
+          <div class="panel">
+            <h2>经验、问题与风险</h2>
+            <p class="help">这一页只回答两个问题：什么值得继续？什么必须解决？</p>
+            <div class="guide-box">
+              <strong>填写方式</strong>
+              <ul>
+                <li>经验：写能复用的方法，不写“我很努力”。</li>
+                <li>问题：写影响业务结果的阻碍，不写个人情绪。</li>
+                <li>每类建议最多写2条。</li>
+              </ul>
+            </div>
+            <h3>有效经验，最多2条</h3>
+            <div class="rowset" id="learningRows"></div>
+            <button class="btn" type="button" onclick="addRow('learningRows')">添加经验</button>
+            <h3>关键问题与风险，最多2条</h3>
+            <div class="rowset" id="riskRows"></div>
+            <button class="btn" type="button" onclick="addRow('riskRows')">添加问题</button>
+          </div>
+        </section>
+
+        <section class="section" data-title="创新协同">
+          <div class="panel">
+            <h2>创新尝试与协同支持</h2>
+            <p class="help">只收已经尝试过的事。没有结果的想法不要写成创新，写到下半年目标里即可。</p>
+            <div class="guide-box">
+              <strong>判断标准</strong>
+              <ul>
+                <li>有效创新：节省时间、带来收入、改善转化、降低人工、形成可复用方法。</li>
+                <li>有效协同：明确谁支持了什么，解决了什么阻碍。</li>
+              </ul>
+            </div>
+            <div class="rowset" id="innovationRows"></div>
+            <button class="btn" type="button" onclick="addRow('innovationRows')">添加创新尝试</button>
+            <h3>关键协同，最多2条</h3>
+            <div class="rowset" id="collabRows"></div>
+            <button class="btn" type="button" onclick="addRow('collabRows')">添加协同事项</button>
+            <h3>下半年需要的资源支持</h3>
+            <textarea id="resourceNeeds" name="resourceNeeds" placeholder="只写最关键的资源缺口。例：需要技术导出企微用户级标签；需要明确港口货源付费规则；需要老板引荐蓝总客户资源。"></textarea>
+          </div>
+        </section>
+
+        <section class="section" data-title="下半年规划">
+          <div class="panel">
+            <h2>下半年目标规划</h2>
+            <p class="help">下半年目标必须从上半年结果里推出来：哪些继续做、哪些要修正、哪些要停止、哪些要新增。</p>
+            <div class="guide-box">
+              <strong>先看四条业务线核心经营指标</strong>
+              <ul>
+                <li>会员：收入目标、续费率、新开会员数、退款率、私域触达转化率。</li>
+                <li>营销/商业：合作金额、执行金额、回款金额、毛利、重点客户续约/复购数量、B端客户案例内容、客户素材/案例沉淀、线索或私域导流。</li>
+                <li>救援：结算额、毛利额、毛利率、订单量、线上新增结算门店、新客户转化、核心客户续约、新城市/门店覆盖。</li>
+                <li>货源：付费收入、付费订单数、拨打UV、拨打转化率、新增会员数、用户反馈采集量。</li>
+                <li>企微/私域运营：可触达用户数、企微关联率、标签准确率、触达批次数、回复率、转化/激活人数、用户反馈采集量、小宝号管理覆盖率。</li>
+                <li>内容/短视频：当前更偏C端司机内容，需单独记录发布量、有效播放、互动、私域导流；B端客户内容偏少，若服务营销线，重点看客户案例、项目证据、品牌素材沉淀。</li>
+              </ul>
+            </div>
+            <div class="guide-box">
+              <strong>承接关系写法</strong>
+              <ul>
+                <li>继续：上半年有效的动作，下半年扩大或固化。</li>
+                <li>修正：上半年有结果但不稳定，下半年改口径、流程、资源或目标。</li>
+                <li>停止：上半年验证无效或投入产出差，下半年不再消耗资源。</li>
+                <li>新增：上半年暴露的新机会或新风险，下半年设置新目标。</li>
+              </ul>
+            </div>
+            <div class="rowset" id="h2Rows"></div>
+            <button class="btn" type="button" onclick="addRow('h2Rows')">添加承接目标</button>
+          </div>
+        </section>
+
+        <section class="section" data-title="生成摘要">
+          <div class="panel">
+            <h2>生成复盘摘要</h2>
+            <p class="help">进入这一步后，系统会自动导出 CSV。请把下载的 CSV 文件发送给文静，用于统一汇总。</p>
+            <div class="send-tip" id="csvSendTip">
+              <strong>提交提醒</strong>
+              页面会自动下载 CSV 文件。下载后请在钉钉/微信里发送给文静；如果没有自动下载，点击下方“重新导出CSV”。
+            </div>
+            <div class="actions" style="justify-content:flex-start;margin-bottom:14px;">
+              <button class="btn primary" type="button" onclick="renderSummary()">生成摘要</button>
+              <button class="btn" type="button" onclick="copySummary()">复制摘要</button>
+              <button class="btn green" type="button" onclick="downloadCSV()">重新导出CSV</button>
+            </div>
+            <div class="review-output" id="reviewOutput">点击“生成摘要”查看当前填写内容。</div>
+          </div>
+        </section>
+      </form>
+
+      <div class="footer-nav">
+        <button class="btn" type="button" onclick="prevStep()">上一步</button>
+        <button class="btn primary" type="button" onclick="nextStep()">下一步</button>
+      </div>
+    </main>
+  </div>
+
+  <div class="toast" id="toast"></div>
+
+  <script>
+    const STORAGE_KEY = "hcb_h1_review_2026";
+    const sections = Array.from(document.querySelectorAll(".section"));
+    const stepList = document.getElementById("stepList");
+    let currentStep = 0;
+
+    const rowConfigs = {
+      learningRows: [
+        ["有效经验", "什么做法有效"],
+        ["依据", "为什么有效，有什么数据或事实"],
+        ["下半年处理", "扩大/标准化/交给他人/停止"]
+      ],
+      riskRows: [
+        ["问题或风险", "具体是什么"],
+        ["根因判断", "为什么发生"],
+        ["解决动作", "下半年怎么处理"],
+        ["需要谁支持", "负责人或协同方"]
+      ],
+      innovationRows: [
+        ["创新尝试", "AI/工具/新业务/新渠道/新机制"],
+        ["解决的问题", "原本卡在哪里"],
+        ["当前结果", "结果或证据"],
+        ["验证结论", "有效/部分有效/无效/待验证"]
+      ],
+      collabRows: [
+        ["协同对象/部门", "和谁协同"],
+        ["协同事项", "一起做了什么"],
+        ["协同效果", "快/中/慢/成本高/成本低"],
+        ["下半年建议", "继续保持或怎么改"]
+      ],
+      h2Rows: [
+        ["承接类型", "继续/修正/停止/新增"],
+        ["来自上半年的哪个结论", "例：企微对临期续费有效；港口货源付费不稳定；B端客户内容不足；小宝号管理未明确"],
+        ["下半年具体目标", "围绕核心指标写清楚数字目标和完成口径"],
+        ["需要支持/主要风险", "人、数据、客户、工具、预算，或可能卡住的原因"]
+      ]
+    };
+
+    function createStepList() {
+      stepList.innerHTML = "";
+      sections.forEach((section, index) => {
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "step-btn";
+        btn.textContent = `${index + 1}. ${section.dataset.title}`;
+        btn.onclick = () => goStep(index);
+        stepList.appendChild(btn);
+      });
+    }
+
+    function goStep(index) {
+      currentStep = Math.max(0, Math.min(sections.length - 1, index));
+      sections.forEach((section, i) => section.classList.toggle("active", i === currentStep));
+      document.getElementById("currentTitle").textContent = sections[currentStep].dataset.title;
+      updateSteps();
+      saveDraft(false);
+      maybeAutoExportCSV();
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    }
+
+    function nextStep() { goStep(currentStep + 1); }
+    function prevStep() { goStep(currentStep - 1); }
+
+    function addRow(containerId, values) {
+      const container = document.getElementById(containerId);
+      const index = container.children.length + 1;
+      const card = document.createElement("div");
+      card.className = "row-card";
+      card.dataset.rowType = containerId;
+      const fields = rowConfigs[containerId];
+      const inner = fields.map(([label, placeholder], fieldIndex) => {
+        const value = values && values[fieldIndex] ? values[fieldIndex] : "";
+        return `<div><label>${label}</label><textarea data-field="${fieldIndex}" placeholder="${placeholder}">${escapeHtml(value)}</textarea></div>`;
+      }).join("");
+      card.innerHTML = `
+        <div class="row-head">
+          <span>第 ${index} 条</span>
+          <button class="btn" type="button" onclick="removeRow(this)">删除</button>
+        </div>
+        <div class="grid">${inner}</div>
+      `;
+      container.appendChild(card);
+    }
+
+    function removeRow(button) {
+      button.closest(".row-card").remove();
+      updateSteps();
+      saveDraft(false);
+    }
+
+    function escapeHtml(str) {
+      return String(str)
+        .replaceAll("&", "&amp;")
+        .replaceAll("<", "&lt;")
+        .replaceAll(">", "&gt;")
+        .replaceAll('"', "&quot;");
+    }
+
+    function collectRows(containerId) {
+      return Array.from(document.querySelectorAll(`#${containerId} .row-card`)).map(card => {
+        return Array.from(card.querySelectorAll("textarea")).map(input => input.value.trim());
+      }).filter(row => row.some(Boolean));
+    }
+
+    function setRows(containerId, rows) {
+      const container = document.getElementById(containerId);
+      container.innerHTML = "";
+      (rows && rows.length ? rows : [null]).forEach(row => addRow(containerId, row));
+    }
+
+    function collectData() {
+      return {
+        name: document.getElementById("name").value.trim(),
+        role: document.getElementById("role").value,
+        businessLine: document.getElementById("businessLine").value,
+        period: document.getElementById("period").value.trim(),
+        responsibilities: document.getElementById("responsibilities").value.trim(),
+        mainResultNote: document.getElementById("mainResultNote").value.trim(),
+        learnings: collectRows("learningRows"),
+        risks: collectRows("riskRows"),
+        innovations: collectRows("innovationRows"),
+        collabs: collectRows("collabRows"),
+        resourceNeeds: document.getElementById("resourceNeeds").value.trim(),
+        h2Targets: collectRows("h2Rows"),
+      };
+    }
+
+    function fillData(data) {
+      if (!data) return;
+      ["name", "role", "businessLine", "period", "responsibilities", "mainResultNote", "resourceNeeds"].forEach(id => {
+        if (data[id] !== undefined) document.getElementById(id).value = data[id];
+      });
+      setRows("learningRows", data.learnings);
+      setRows("riskRows", data.risks);
+      setRows("innovationRows", data.innovations);
+      setRows("collabRows", data.collabs);
+      setRows("h2Rows", data.h2Targets);
+      updateSteps();
+    }
+
+    function saveDraft(showMessage = true) {
+      localStorage.setItem(STORAGE_KEY, JSON.stringify(collectData()));
+      updateSteps();
+      if (showMessage) toast("草稿已保存在当前浏览器");
+    }
+
+    function loadDraft() {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (raw) {
+        try { fillData(JSON.parse(raw)); return; } catch (e) {}
+      }
+      Object.keys(rowConfigs).forEach(id => setRows(id, null));
+    }
+
+    function sectionDone(index) {
+      const data = collectData();
+      if (index === 0) return Boolean(data.name && data.role && data.businessLine);
+      if (index === 1) return Boolean(data.mainResultNote);
+      if (index === 2) return data.learnings.length > 0 || data.risks.length > 0;
+      if (index === 3) return data.innovations.length > 0 || data.collabs.length > 0 || data.resourceNeeds;
+      if (index === 4) return data.h2Targets.length > 0;
+      if (index === 5) return true;
+      return false;
+    }
+
+    function updateSteps() {
+      const buttons = Array.from(document.querySelectorAll(".step-btn"));
+      let doneCount = 0;
+      buttons.forEach((btn, index) => {
+        const done = sectionDone(index);
+        if (done) doneCount += 1;
+        btn.classList.toggle("active", index === currentStep);
+        btn.classList.toggle("done", done);
+      });
+      const data = collectData();
+      document.getElementById("sideName").textContent = data.name || "未填写";
+      document.getElementById("sideLine").textContent = data.businessLine || "未选择";
+      document.getElementById("sideDone").textContent = `${doneCount}/${sections.length}`;
+    }
+
+    function renderRows(title, rows, headers) {
+      if (!rows.length) return `${title}\n- 暂未填写\n`;
+      return `${title}\n` + rows.map((row, i) => {
+        const detail = row.map((v, idx) => `${headers[idx]}：${v || "未填"}`).join("；");
+        return `${i + 1}. ${detail}`;
+      }).join("\n") + "\n";
+    }
+
+    function renderSummary() {
+      const d = collectData();
+      const text = [
+        `# ${d.period || "2026上半年"}复盘信息`,
+        "",
+        `姓名：${d.name || "未填写"}`,
+        `角色：${d.role || "未选择"}`,
+        `业务线：${d.businessLine || "未选择"}`,
+        "",
+        "## 上半年主要负责事项",
+        d.responsibilities || "暂未填写",
+        "",
+        "## 目标完成与核心结果",
+        d.mainResultNote || "未填写",
+        "",
+        renderRows("## 有效经验", d.learnings, rowConfigs.learningRows.map(x => x[0])),
+        renderRows("## 问题风险", d.risks, rowConfigs.riskRows.map(x => x[0])),
+        renderRows("## 创新尝试", d.innovations, rowConfigs.innovationRows.map(x => x[0])),
+        renderRows("## 协同事项", d.collabs, rowConfigs.collabRows.map(x => x[0])),
+        "## 下半年资源需求",
+        d.resourceNeeds || "暂未填写",
+        "",
+        renderRows("## 下半年目标", d.h2Targets, rowConfigs.h2Rows.map(x => x[0]))
+      ].join("\n");
+      document.getElementById("reviewOutput").textContent = text;
+      saveDraft(false);
+      return text;
+    }
+
+    async function copySummary() {
+      const text = renderSummary();
+      try {
+        await navigator.clipboard.writeText(text);
+        toast("摘要已复制");
+      } catch (e) {
+        toast("复制失败，可以手动选中文本复制");
+      }
+    }
+
+    function flattenRows(rows) {
+      return rows.map(row => row.join(" | ")).join("\n");
+    }
+
+    function csvEscape(value) {
+      const text = String(value || "");
+      return `"${text.replaceAll('"', '""')}"`;
+    }
+
+    function downloadCSV() {
+      const d = collectData();
+      const headers = [
+        "姓名", "角色", "业务线", "周期", "主要负责事项", "核心结果与差异原因",
+        "有效经验", "问题风险", "创新尝试", "协同事项", "资源需求", "下半年目标"
+      ];
+      const row = [
+        d.name, d.role, d.businessLine, d.period, d.responsibilities, d.mainResultNote,
+        flattenRows(d.learnings), flattenRows(d.risks), flattenRows(d.innovations), flattenRows(d.collabs),
+        d.resourceNeeds, flattenRows(d.h2Targets)
+      ];
+      const csv = "\ufeff" + headers.map(csvEscape).join(",") + "\n" + row.map(csvEscape).join(",");
+      downloadBlob(csv, `2026上半年复盘_${d.name || "未命名"}.csv`, "text/csv;charset=utf-8");
+      saveDraft(false);
+    }
+
+    function maybeAutoExportCSV() {
+      if (currentStep !== sections.length - 1 || window.__h1ReviewAutoExported) return;
+      window.__h1ReviewAutoExported = true;
+      renderSummary();
+      setTimeout(() => {
+        downloadCSV();
+        toast("CSV已自动导出，请发送给文静");
+      }, 250);
+    }
+
+    function downloadJSON() {
+      const d = collectData();
+      downloadBlob(JSON.stringify(d, null, 2), `2026上半年复盘_${d.name || "未命名"}.json`, "application/json;charset=utf-8");
+      saveDraft(false);
+    }
+
+    function downloadBlob(content, filename, type) {
+      const blob = new Blob([content], { type });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      a.remove();
+      URL.revokeObjectURL(url);
+      toast("文件已生成");
+    }
+
+    function toast(message) {
+      const el = document.getElementById("toast");
+      el.textContent = message;
+      el.classList.add("show");
+      clearTimeout(window.__toastTimer);
+      window.__toastTimer = setTimeout(() => el.classList.remove("show"), 2200);
+    }
+
+    document.getElementById("reviewForm").addEventListener("input", () => {
+      updateSteps();
+      clearTimeout(window.__saveTimer);
+      window.__saveTimer = setTimeout(() => saveDraft(false), 600);
+    });
+
+    createStepList();
+    loadDraft();
+    goStep(0);
+  </script>
+</body>
+</html>
