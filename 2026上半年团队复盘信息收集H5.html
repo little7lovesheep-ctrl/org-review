@@ -807,6 +807,23 @@
       return `"${text.replaceAll('"', '""')}"`;
     }
 
+    function safeFileNamePart(value) {
+      return String(value || "")
+        .trim()
+        .replace(/[\\/:*?"<>|]/g, "")
+        .replace(/\s+/g, "");
+    }
+
+    function buildExportFileName(extension) {
+      const d = collectData();
+      const memberName = safeFileNamePart(d.name);
+      if (!memberName) {
+        toast("请先选择姓名，再导出文件");
+        return "";
+      }
+      return `${memberName}_2026上半年团队复盘信息收集.${extension}`;
+    }
+
     function downloadCSV() {
       const d = collectData();
       const headers = [
@@ -819,7 +836,9 @@
         d.resourceNeeds, flattenRows(d.h2Targets)
       ];
       const csv = "\ufeff" + headers.map(csvEscape).join(",") + "\n" + row.map(csvEscape).join(",");
-      downloadBlob(csv, `2026上半年复盘_${d.name || "未命名"}.csv`, "text/csv;charset=utf-8");
+      const filename = buildExportFileName("csv");
+      if (!filename) return;
+      downloadBlob(csv, filename, "text/csv;charset=utf-8");
       saveDraft(false);
     }
 
@@ -835,7 +854,9 @@
 
     function downloadJSON() {
       const d = collectData();
-      downloadBlob(JSON.stringify(d, null, 2), `2026上半年复盘_${d.name || "未命名"}.json`, "application/json;charset=utf-8");
+      const filename = buildExportFileName("json");
+      if (!filename) return;
+      downloadBlob(JSON.stringify(d, null, 2), filename, "application/json;charset=utf-8");
       saveDraft(false);
     }
 
